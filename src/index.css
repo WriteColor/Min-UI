@@ -1,0 +1,472 @@
+@import "tailwindcss";
+
+/* ── MIN Custom Theme for Tailwind ──────────────────────────────────────────── */
+@theme {
+  --color-min-purple: #a855f7;
+  --color-min-purple-dim: #581c87;
+  --color-min-purple-glow: rgba(168, 85, 247, 0.3);
+  --color-min-card: rgba(8, 4, 15, 0.95);
+  --color-min-surface: rgba(20, 10, 30, 0.8);
+  --color-min-border: rgba(168, 85, 247, 0.15);
+  --font-family-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-mono: 'JetBrains Mono', monospace;
+}
+
+:root {
+  --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  
+  /* Electric Purple and Pitch Black Theme */
+  --bg-color: #000000;
+  --color-primary: #a855f7;       /* Electric Purple */
+  --color-primary-dim: #581c87;   /* Deep Violet */
+  --color-bg-card: rgba(8, 4, 15, 0.95);
+  --color-border: rgba(168, 85, 247, 0.15);
+  --color-border-hover: rgba(168, 85, 247, 0.4);
+  --glow-primary: rgba(168, 85, 247, 0.3);
+  
+  /* State Colors */
+  --color-muted: #ef4444;
+  --color-listening: #ec4899;
+  --color-thinking: #6366f1;
+  --color-speaking: #c026d3;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  overflow: hidden !important;
+  height: 100vh;
+  width: 100vw;
+  background-color: transparent !important;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: #f3e8ff;
+}
+
+/* App layout wrapper */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 100vh;
+  padding: 1.5rem;
+  position: relative;
+  z-index: 10;
+  background-color: var(--bg-color);
+  overflow: hidden !important;
+}
+
+/* Header row */
+.hud-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  gap: 1.5rem;
+  z-index: 20;
+}
+
+/* Main body for 3D Orb canvas */
+.hud-body {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: 100%;
+}
+
+/* Footer control dock */
+.hud-footer {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  z-index: 20;
+}
+
+/* Radix / shadcn Style Cards */
+.radix-card {
+  background-color: var(--color-bg-card);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(168, 85, 247, 0.05);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 1.25rem;
+}
+
+.radix-card:hover {
+  border-color: var(--color-border-hover);
+  box-shadow: 0 4px 40px rgba(0, 0, 0, 0.9), 0 0 25px var(--glow-primary);
+}
+
+/* Radix Input Control */
+.radix-input {
+  background-color: rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  color: #fff;
+  font-family: var(--font-sans);
+  padding: 0.6rem 0.9rem;
+  font-size: 0.9rem;
+  transition: all 0.25s ease;
+  width: 100%;
+}
+
+.radix-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.25);
+}
+
+/* Radix Interactive Button */
+.radix-button {
+  background-color: rgba(168, 85, 247, 0.1);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  color: #e9d5ff;
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.radix-button:hover:not(:disabled) {
+  background-color: rgba(168, 85, 247, 0.25);
+  border-color: var(--color-primary);
+  color: #fff;
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.2);
+}
+
+.radix-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.radix-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Sidebar Widget Dock */
+.widget-dock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  position: absolute;
+  right: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 30;
+}
+
+.dock-icon-button {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  color: #c084fc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.dock-icon-button:hover {
+  border-color: var(--color-primary);
+  color: #fff;
+  box-shadow: 0 0 15px var(--glow-primary);
+  transform: scale(1.08);
+}
+
+.dock-icon-button.active {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #000;
+}
+
+/* Floating overlay widgets */
+.widget-card-overlay {
+  position: absolute;
+  right: 5.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 360px;
+  z-index: 30;
+  animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Clock / Weather widgets */
+.hud-stat-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: #c084fc;
+  text-transform: uppercase;
+}
+
+.hud-stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #fff;
+  font-family: var(--font-mono);
+}
+
+/* Collapsible diagnostic console */
+.console-panel {
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+.console-panel.open {
+  height: 180px;
+  opacity: 1;
+  border: 1px solid var(--color-border);
+  margin-bottom: 0.5rem;
+}
+
+.console-log-scroll {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-right: 0.5rem;
+}
+
+/* Settings Modal */
+.modal-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(12px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  padding: 1.5rem;
+}
+
+.modal-content-card {
+  max-width: 600px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  animation: zoomUp 0.3s ease-out;
+}
+
+.settings-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--color-border);
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.settings-tab-btn {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #c084fc;
+  padding: 0.5rem 0.25rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.settings-tab-btn.active {
+  color: #fff;
+  border-color: var(--color-primary);
+}
+
+.settings-form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  max-height: 350px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.settings-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+/* Animations */
+@keyframes slideIn {
+  from { transform: translate(25px, -50%); opacity: 0; }
+  to { transform: translate(0, -50%); opacity: 1; }
+}
+
+@keyframes zoomUp {
+  from { transform: scale(0.96); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* 3D Sphere Ripples and Particles */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: ripple-out 1.5s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+  z-index: -10;
+  border: 1px solid var(--color-primary);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+@keyframes ripple-out {
+  0% {
+    width: 0;
+    height: 0;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    width: 100vw;
+    height: 100vw;
+    opacity: 0;
+    border-width: 0;
+    transform: translate(-50%, -50%) scale(1.5);
+  }
+}
+
+.data-particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(0.5px);
+  z-index: -5;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Mini Mode Widget styles */
+.mini-widget-container {
+  width: 240px;
+  height: 240px;
+  position: relative;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: transparent;
+  border: 1px solid rgba(168, 85, 247, 0.25);
+  box-shadow: 0 0 25px rgba(168, 85, 247, 0.2);
+  transition: border-color 0.3s;
+}
+
+.mini-widget-container:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 35px rgba(168, 85, 247, 0.4);
+}
+
+.mini-hover-toolbar {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.9);
+  padding: 0.75rem;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  z-index: 40;
+}
+
+.mini-widget-container:hover .mini-hover-toolbar {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mini-snap-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+  margin-top: 0.25rem;
+}
+
+.mini-snap-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid var(--color-border);
+  background-color: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mini-snap-dot:hover {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
