@@ -42,36 +42,37 @@ export function WeatherWidget({ data, onClose }: WeatherWidgetProps) {
     >
       <div className="flex items-start justify-between">
         <div>
-          <div className="text-4xl font-light text-white">
-            {data.temp !== null ? `${Math.round(data.temp)}°` : "--°"}
+          <div className="text-4xl font-light text-white font-mono">
+            {data.temp !== null ? `${Math.round(data.temp)}` : "--"}
+            <span className="text-lg text-purple-400">C</span>
           </div>
-          <div className="text-sm text-gray-400 mt-0.5">
-            Sensación {data.feel !== null ? `${Math.round(data.feel)}°` : "--°"}
+          <div className="text-xs text-gray-500 mt-0.5">
+            Sensacion {data.feel !== null ? `${Math.round(data.feel)}` : "--"}C
           </div>
-          <div className="text-sm text-purple-300 mt-1">
-            {data.emoji} {data.desc}
+          <div className="text-sm text-purple-300 mt-2 font-medium">
+            {data.desc}
           </div>
         </div>
         <div className="text-right">
-          <div className="text-xs text-gray-500 font-mono">{data.local_time}</div>
-          <div className="text-sm text-gray-300 mt-1">{data.place}</div>
+          <div className="text-[0.65rem] text-gray-600 font-mono">{data.local_time}</div>
+          <div className="text-xs text-gray-400 mt-1">{data.place}</div>
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-3 mt-4">
+      <div className="grid grid-cols-3 gap-2 mt-4">
         <StatPill icon={Droplets} label="Humedad" value={data.humidity !== null ? `${data.humidity}%` : "--"} />
         <StatPill icon={Wind} label="Viento" value={data.wind !== null ? `${data.wind} km/h` : "--"} />
         <StatPill icon={Thermometer} label="Precip." value={data.precip !== null ? `${data.precip} mm` : "--"} />
       </div>
 
       {data.forecast && data.forecast.length > 0 && (
-        <div className="flex gap-2 mt-4 overflow-x-auto">
-          {data.forecast.slice(0, 5).map((day: { date?: string; emoji?: string; min: number | null; max: number | null }, i: number) => (
-            <div key={i} className="flex flex-col items-center min-w-[4rem] rounded-lg bg-white/5 py-2 px-1.5 text-xs">
-              <span className="text-gray-500">{day.date?.slice(5) || "--"}</span>
-              <span className="text-lg my-0.5">{day.emoji}</span>
-              <span className="text-gray-300">
-                {day.min !== null ? Math.round(day.min) : "--"}° / {day.max !== null ? Math.round(day.max) : "--"}°
+        <div className="flex gap-1.5 mt-4 overflow-x-auto pb-1">
+          {data.forecast.slice(0, 5).map((day: { date?: string; desc?: string; min: number | null; max: number | null }, i: number) => (
+            <div key={i} className="flex flex-col items-center min-w-[3.5rem] rounded-sm bg-black/40 border border-purple-500/10 py-2 px-1 text-[0.6rem]">
+              <span className="text-gray-600 font-mono">{day.date?.slice(5) || "--"}</span>
+              <span className="text-gray-400 text-[0.55rem] truncate max-w-full mt-0.5">{day.desc?.slice(0, 8)}</span>
+              <span className="text-gray-300 mt-1 font-mono">
+                {day.min !== null ? Math.round(day.min) : "--"}/{day.max !== null ? Math.round(day.max) : "--"}
               </span>
             </div>
           ))}
@@ -96,10 +97,13 @@ function WidgetShell({
     <div
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      className="animate-in fade-in slide-in-from-right-4 duration-300 rounded-2xl border border-purple-500/15 bg-[rgba(8,4,15,0.95)] backdrop-blur-xl p-5 shadow-2xl shadow-purple-500/10 w-80 relative"
+      className="animate-slide-up rounded-sm border border-purple-500/15 bg-black/95 backdrop-blur-xl p-4 shadow-2xl shadow-purple-500/10 w-72 relative"
     >
-      <button onClick={onClose} className="absolute top-3 right-3 text-gray-600 hover:text-white transition-colors cursor-pointer">
-        <X className="h-3.5 w-3.5" />
+      <button 
+        onClick={onClose} 
+        className="absolute top-2.5 right-2.5 h-5 w-5 flex items-center justify-center rounded-sm text-gray-600 hover:text-white hover:bg-purple-500/15 transition-all cursor-pointer"
+      >
+        <X className="h-3 w-3" />
       </button>
       {children}
     </div>
@@ -108,10 +112,10 @@ function WidgetShell({
 
 function StatPill({ icon: Icon, label, value }: { icon: typeof Droplets; label: string; value: string }) {
   return (
-    <div className="flex flex-col items-center gap-1 rounded-lg bg-white/5 py-2">
-      <Icon className="h-3.5 w-3.5 text-purple-400" />
-      <span className="text-[0.65rem] text-gray-500 uppercase tracking-wider">{label}</span>
-      <span className="text-xs text-gray-200 font-medium">{value}</span>
+    <div className="flex flex-col items-center gap-0.5 rounded-sm bg-black/40 border border-purple-500/10 py-2">
+      <Icon className="h-3 w-3 text-purple-400" />
+      <span className="text-[0.55rem] text-gray-600 uppercase tracking-wider">{label}</span>
+      <span className="text-[0.65rem] text-gray-300 font-mono">{value}</span>
     </div>
   );
 }

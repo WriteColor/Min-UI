@@ -52,26 +52,26 @@ export function ClockWidget({ onClose }: ClockWidgetProps) {
         if (timerRef.current) clearTimeout(timerRef.current);
       }}
       onMouseLeave={() => setAutoHide(true)}
-      className="animate-in fade-in slide-in-from-right-4 duration-300 rounded-2xl border border-purple-500/15 bg-[rgba(8,4,15,0.95)] backdrop-blur-xl p-5 shadow-2xl shadow-purple-500/10 w-72 relative"
+      className="animate-slide-up rounded-sm border border-purple-500/15 bg-black/95 backdrop-blur-xl p-4 shadow-2xl shadow-purple-500/10 w-64 relative"
     >
       <button
         onClick={onClose}
-        className="absolute top-3 right-3 text-gray-600 hover:text-white transition-colors cursor-pointer"
+        className="absolute top-2.5 right-2.5 h-5 w-5 flex items-center justify-center rounded-sm text-gray-600 hover:text-white hover:bg-purple-500/15 transition-all cursor-pointer"
       >
-        <X className="h-3.5 w-3.5" />
+        <X className="h-3 w-3" />
       </button>
 
-      <div className="flex items-center gap-2 mb-3">
-        <ClockIcon className="h-4 w-4 text-purple-400" />
-        <span className="text-xs text-purple-400 font-medium uppercase tracking-wider">
+      <div className="flex items-center gap-1.5 mb-3">
+        <ClockIcon className="h-3.5 w-3.5 text-purple-400" />
+        <span className="text-[0.65rem] text-purple-400 font-medium uppercase tracking-wider">
           Hora Local
         </span>
       </div>
 
-      <div className="text-4xl font-light text-white font-mono tracking-wider">
+      <div className="text-3xl font-light text-white font-mono tracking-wider">
         {time}
       </div>
-      <div className="text-sm text-gray-400 mt-1 capitalize">{date}</div>
+      <div className="text-xs text-gray-500 mt-1.5 capitalize">{date}</div>
     </div>
   );
 }
