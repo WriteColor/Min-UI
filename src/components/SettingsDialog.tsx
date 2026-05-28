@@ -204,35 +204,35 @@ export function SettingsDialog({
       <DialogContent className="max-w-4xl h-[85vh] overflow-hidden flex flex-col p-0 border border-purple-500/20 bg-zinc-950/98 backdrop-blur-2xl rounded-sm shadow-2xl shadow-purple-500/5">
         <div className="flex-1 overflow-hidden flex">
           {/* ── Panel Izquierdo: Sidebar ───────────────────────────────────── */}
-          <div className="w-64 border-r border-purple-500/10 p-5 flex flex-col justify-between shrink-0 bg-black/40">
-            <div className="space-y-6">
+          <div className="w-64 border-r border-purple-500/10 p-6 flex flex-col justify-between shrink-0 bg-black/40">
+            <div className="space-y-8">
               <div>
-                <h3 className="text-xs font-extrabold uppercase tracking-widest text-purple-400 flex items-center gap-1.5">
+                <h3 className="text-xs font-extrabold uppercase tracking-widest text-purple-400 flex items-center gap-2">
                   <Monitor className="h-3.5 w-3.5" /> MIN Config
                 </h3>
-                <p className="text-[0.65rem] text-gray-500 mt-1">Ajusta los parámetros del asistente en tiempo real.</p>
+                <p className="text-[0.65rem] text-gray-500 mt-2 leading-relaxed">Ajusta los parametros del asistente en tiempo real.</p>
               </div>
 
-              <div className="space-y-1">
+              <nav className="space-y-1.5">
                 {TAB_ITEMS.map(({ id, label, icon: Icon }) => (
                   <button
                     key={id}
                     onClick={() => setActiveTab(id)}
                     className={cn(
-                      "w-full flex items-center justify-between px-3 py-2 rounded-sm text-xs font-medium transition-all text-left group cursor-pointer",
+                      "w-full flex items-center justify-between px-3 py-2.5 rounded-sm text-xs font-medium transition-all text-left group cursor-pointer",
                       activeTab === id
                         ? "text-purple-300 bg-purple-500/15 border-l-2 border-purple-500 shadow-md shadow-purple-500/5"
                         : "text-gray-400 hover:text-gray-200 hover:bg-white/5"
                     )}
                   >
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2.5">
                       <Icon className="h-4 w-4" />
                       <span>{label}</span>
                     </div>
                     <ChevronRight className={cn("h-3 w-3 opacity-0 transition-opacity", activeTab === id && "opacity-100 text-purple-400")} />
                   </button>
                 ))}
-              </div>
+              </nav>
             </div>
 
             {agentStatus && (
@@ -251,24 +251,24 @@ export function SettingsDialog({
 
           {/* ── Panel Derecho: Contenido ───────────────────────────────────── */}
           <div className="flex-1 flex flex-col overflow-hidden bg-black/10">
-            <div className="p-6 border-b border-purple-500/10 flex items-center justify-between">
+            <header className="px-8 py-6 border-b border-purple-500/10 flex items-center justify-between">
               <div>
                 <h2 className="text-base font-bold text-white">
                   {TAB_ITEMS.find((t) => t.id === activeTab)?.label}
                 </h2>
-                <p className="text-xs text-gray-400 mt-0.5">
+                <p className="text-xs text-gray-400 mt-1.5">
                   {TAB_ITEMS.find((t) => t.id === activeTab)?.desc}
                 </p>
               </div>
-            </div>
+            </header>
 
-            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+            <div className="flex-1 overflow-y-auto px-8 py-6 space-y-6">
               {/* ── ASISTENTE ──────────────────────────────────────────────── */}
               {activeTab === "assistant" && (
-                <div className="space-y-5">
-                  <div className="rounded-sm bg-zinc-900/20 border border-zinc-800/40 p-4 space-y-4">
-                    <h4 className="text-xs font-semibold text-purple-400">Personalización de Voz y Navegador</h4>
-                    <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-6">
+                  <section className="rounded-sm bg-zinc-900/20 border border-zinc-800/40 p-5 space-y-5">
+                    <h4 className="text-xs font-semibold text-purple-400">Personalizacion de Voz y Navegador</h4>
+                    <div className="grid grid-cols-2 gap-5">
                       <SettingsField label="Voz del asistente (TTS)">
                         <Select
                           value={config.min_voice || "Aoede"}
@@ -323,12 +323,12 @@ export function SettingsDialog({
                         </Select>
                       </SettingsField>
                     </div>
-                  </div>
+                  </section>
 
-                  <div className="rounded-sm bg-zinc-900/20 border border-zinc-800/40 p-4 space-y-4">
-                    <h4 className="text-xs font-semibold text-purple-400 flex items-center gap-1.5"><Camera className="h-3.5 w-3.5" /> Cámara Web</h4>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="mt-1">
+                  <section className="rounded-sm bg-zinc-900/20 border border-zinc-800/40 p-5 space-y-5">
+                    <h4 className="text-xs font-semibold text-purple-400 flex items-center gap-2"><Camera className="h-3.5 w-3.5" /> Camara Web</h4>
+                    <div className="grid grid-cols-2 gap-5">
+                      <div>
                         <Switch
                           checked={config.camera_enabled ?? true}
                           onChange={(v) => onConfigChange("camera_enabled", v)}
@@ -343,15 +343,15 @@ export function SettingsDialog({
                           max={9}
                           value={config.camera_index ?? 0}
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) => onConfigChange("camera_index", parseInt(e.target.value) || 0)}
-                          placeholder="0 (Cámara integrada/primaria)"
+                          placeholder="0 (Camara integrada/primaria)"
                         />
                       </SettingsField>
                     </div>
-                  </div>
+                  </section>
 
-                  <div className="rounded-sm bg-zinc-900/20 border border-zinc-800/40 p-4 space-y-4">
+                  <section className="rounded-sm bg-zinc-900/20 border border-zinc-800/40 p-5 space-y-5">
                     <h4 className="text-xs font-semibold text-purple-400">Estabilidad y Rendimiento</h4>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-5">
                       <SettingsField label="Límite de memoria RAM del Backend (MB)">
                         <Input
                           type="number"
@@ -363,47 +363,45 @@ export function SettingsDialog({
                         />
                       </SettingsField>
                     </div>
-                  </div>
+                  </section>
                 </div>
               )}
 
               {/* ── GUARDIÁN DE VISIÓN ────────────────────────────────────────── */}
               {activeTab === "guardian" && (
-                <div className="rounded-sm bg-zinc-900/20 border border-zinc-800/40 p-4 space-y-5">
+                <section className="rounded-sm bg-zinc-900/20 border border-zinc-800/40 p-5 space-y-6">
                   <Switch
                     checked={config.vision_guardian?.enabled ?? false}
                     onChange={(v) => handleVisionGuardianChange("enabled", v)}
-                    label="Habilitar Guardián de Visión"
-                    desc="Activa el análisis pasivo de pantalla en segundo plano para alertarte si necesitas soporte."
+                    label="Habilitar Guardian de Vision"
+                    desc="Activa el analisis pasivo de pantalla en segundo plano para alertarte si necesitas soporte."
                   />
 
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <div className="flex justify-between text-xs text-gray-300">
                       <span>Intervalo de escaneo de pantalla: <span className="text-purple-400 font-mono font-semibold">{config.vision_guardian?.interval ?? 120} segundos</span></span>
                     </div>
-                    <div className="flex gap-4 items-center">
-                      <input
-                        type="range"
-                        min={30}
-                        max={600}
-                        step={10}
-                        value={config.vision_guardian?.interval ?? 120}
-                        onChange={(e) => handleVisionGuardianChange("interval", parseInt(e.target.value))}
-                        className="flex-1 h-1 bg-zinc-800 rounded-sm appearance-none cursor-pointer accent-purple-500"
-                      />
-                    </div>
+                    <input
+                      type="range"
+                      min={30}
+                      max={600}
+                      step={10}
+                      value={config.vision_guardian?.interval ?? 120}
+                      onChange={(e) => handleVisionGuardianChange("interval", parseInt(e.target.value))}
+                      className="w-full h-1 bg-zinc-800 rounded-sm appearance-none cursor-pointer accent-purple-500"
+                    />
                   </div>
 
-                  <div className="p-3.5 rounded-sm bg-purple-950/10 border border-purple-500/10 text-[0.7rem] text-purple-300 leading-relaxed">
-                    💡 **¿Cómo funciona?** El Guardián de Visión ejecuta capturas de pantalla silenciosas en el intervalo configurado y utiliza Gemini Vision para procesar la información en vivo. Si detecta anomalías, problemas o contenido útil, inyecta comentarios de voz o notificaciones en tu chat. No captura imágenes si estás reproduciendo audio o el asistente está hablando.
+                  <div className="p-4 rounded-sm bg-purple-950/10 border border-purple-500/10 text-[0.7rem] text-purple-300 leading-relaxed">
+                    <strong>Como funciona?</strong> El Guardian de Vision ejecuta capturas de pantalla silenciosas en el intervalo configurado y utiliza Gemini Vision para procesar la informacion en vivo. Si detecta anomalias, problemas o contenido util, inyecta comentarios de voz o notificaciones en tu chat.
                   </div>
-                </div>
+                </section>
               )}
 
               {/* ── ACCESIBILIDAD ────────────────────────────────────────────── */}
               {activeTab === "accessibility" && (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-6">
+                  <div className="grid grid-cols-2 gap-4">
                     <Switch
                       checked={config.accessibility?.task_simplification_enabled ?? true}
                       onChange={(v) => handleAccessibilityChange("task_simplification_enabled", v)}
@@ -454,9 +452,9 @@ export function SettingsDialog({
                     />
                   </div>
 
-                  <div className="rounded-sm bg-zinc-900/20 border border-zinc-800/40 p-4 space-y-4">
-                    <h4 className="text-xs font-semibold text-purple-400">Umbrales & Escala</h4>
-                    <div className="grid grid-cols-2 gap-4">
+                  <section className="rounded-sm bg-zinc-900/20 border border-zinc-800/40 p-5 space-y-5">
+                    <h4 className="text-xs font-semibold text-purple-400">Umbrales y Escala</h4>
+                    <div className="grid grid-cols-2 gap-5">
                       <SettingsField label="Umbral de error de habla (Filtro de ruido)">
                         <div className="space-y-1.5">
                           <div className="flex justify-between text-[0.65rem] text-gray-400">
@@ -491,34 +489,34 @@ export function SettingsDialog({
                         </div>
                       </SettingsField>
                     </div>
-                  </div>
+                  </section>
                 </div>
               )}
 
               {/* ── API KEYS ───────────────────────────────────────────────── */}
               {activeTab === "api_keys" && (
-                <div className="space-y-4">
-                  <div className="rounded-sm bg-zinc-900/20 border border-zinc-800/40 p-4 space-y-4">
-                    <h4 className="text-xs font-semibold text-purple-400 flex items-center gap-1.5"><Lock className="h-3.5 w-3.5" /> Claves de IA</h4>
+                <div className="space-y-6">
+                  <section className="rounded-sm bg-zinc-900/20 border border-zinc-800/40 p-5 space-y-5">
+                    <h4 className="text-xs font-semibold text-purple-400 flex items-center gap-2"><Lock className="h-3.5 w-3.5" /> Claves de IA</h4>
                     <SecretField label="Gemini API Key" value={config.gemini_api_key || ""} onChange={(v: string) => onConfigChange("gemini_api_key", v)} />
                     <SecretField label="OpenRouter API Key" value={config.openrouter_api_key || ""} onChange={(v: string) => onConfigChange("openrouter_api_key", v)} />
-                  </div>
+                  </section>
 
-                  <div className="rounded-sm bg-zinc-900/20 border border-zinc-800/40 p-4 space-y-4">
+                  <section className="rounded-sm bg-zinc-900/20 border border-zinc-800/40 p-5 space-y-5">
                     <h4 className="text-xs font-semibold text-purple-400">Spotify Developer Credenciales</h4>
                     <SecretField label="Spotify Client ID" value={config.spotify_client_id || ""} onChange={(v: string) => onConfigChange("spotify_client_id", v)} />
                     <SecretField label="Spotify Client Secret" value={config.spotify_client_secret || ""} onChange={(v: string) => onConfigChange("spotify_client_secret", v)} />
                     <SettingsField label="Spotify Redirect URI">
                       <Input value={config.spotify_redirect_uri || "http://127.0.0.1:8888/callback"} onChange={(e: React.ChangeEvent<HTMLInputElement>) => onConfigChange("spotify_redirect_uri", e.target.value)} />
                     </SettingsField>
-                  </div>
+                  </section>
                 </div>
               )}
 
               {/* ── UBICACIÓN ──────────────────────────────────────────────── */}
               {activeTab === "location" && (
-                <div className="rounded-sm bg-zinc-900/20 border border-zinc-800/40 p-4 space-y-4">
-                  <SettingsField label="Modo de ubicación">
+                <section className="rounded-sm bg-zinc-900/20 border border-zinc-800/40 p-5 space-y-5">
+                  <SettingsField label="Modo de ubicacion">
                     <Select value={config.location_mode || "system"} onValueChange={(v: string) => onConfigChange("location_mode", v)}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
@@ -528,7 +526,7 @@ export function SettingsDialog({
                     </Select>
                   </SettingsField>
 
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-3 gap-5">
                     <SettingsField label="Ciudad">
                       <Input value={config.location_city || ""} onChange={(e: React.ChangeEvent<HTMLInputElement>) => onConfigChange("location_city", e.target.value)} placeholder="Tegucigalpa" />
                     </SettingsField>
@@ -543,7 +541,7 @@ export function SettingsDialog({
                   <SettingsField label="Zona Horaria (Timezone)">
                     <Input value={config.timezone || ""} onChange={(e: React.ChangeEvent<HTMLInputElement>) => onConfigChange("timezone", e.target.value)} placeholder="America/Tegucigalpa" />
                   </SettingsField>
-                </div>
+                </section>
               )}
 
               {/* ── AVANZADO ───────────────────────────────────────────────── */}
@@ -825,8 +823,8 @@ export function SettingsDialog({
 
 function SettingsField({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="space-y-1.5">
-      <label className="text-[0.7rem] font-bold uppercase tracking-wider text-gray-400">{label}</label>
+    <div className="space-y-2">
+      <label className="block text-[0.7rem] font-bold uppercase tracking-wider text-gray-400">{label}</label>
       {children}
     </div>
   );

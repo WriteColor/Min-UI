@@ -92,11 +92,11 @@ export function ControlBar({
       <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
       
       {/* Control bar container */}
-      <div className="relative mx-auto max-w-xl px-4 pb-5">
+      <div className="relative mx-auto max-w-xl px-6 pb-8">
         <form
           onSubmit={handleSubmit}
           className={cn(
-            "flex items-center gap-3 rounded-sm border bg-black/95 backdrop-blur-xl px-4 py-3 shadow-2xl transition-all duration-200",
+            "flex items-center gap-4 rounded-sm border bg-black/95 backdrop-blur-xl px-5 py-4 shadow-2xl transition-all duration-200",
             focused
               ? "border-purple-500/40 shadow-purple-500/20"
               : "border-purple-500/15 shadow-purple-500/5"
