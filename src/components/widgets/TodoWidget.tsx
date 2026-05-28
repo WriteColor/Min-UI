@@ -45,15 +45,15 @@ export function TodoWidget({ todos, onAddTodo, onToggleTodo, onDeleteTodo, onClo
         if (timerRef.current) clearTimeout(timerRef.current);
       }}
       onMouseLeave={() => setAutoHide(true)}
-      className="animate-in fade-in slide-in-from-right-4 duration-300 rounded-2xl border border-purple-500/15 bg-[rgba(8,4,15,0.95)] backdrop-blur-xl p-5 shadow-2xl shadow-purple-500/10 w-80 relative max-h-[70vh] flex flex-col"
+      className="animate-slide-up rounded-sm border border-purple-500/15 bg-black/95 backdrop-blur-xl p-4 shadow-2xl shadow-purple-500/10 w-72 relative max-h-[70vh] flex flex-col"
     >
-      <button onClick={onClose} className="absolute top-3 right-3 text-gray-600 hover:text-white transition-colors cursor-pointer">
-        <X className="h-3.5 w-3.5" />
+      <button onClick={onClose} className="absolute top-2.5 right-2.5 h-5 w-5 flex items-center justify-center rounded-sm text-gray-600 hover:text-white hover:bg-purple-500/15 transition-all cursor-pointer">
+        <X className="h-3 w-3" />
       </button>
 
-      <div className="flex items-center gap-2 mb-3">
-        <ListTodo className="h-4 w-4 text-purple-400" />
-        <span className="text-xs text-purple-400 font-medium uppercase tracking-wider">Tareas</span>
+      <div className="flex items-center gap-1.5 mb-3">
+        <ListTodo className="h-3.5 w-3.5 text-purple-400" />
+        <span className="text-[0.65rem] text-purple-400 font-medium uppercase tracking-wider">Tareas</span>
         <span className="text-[0.65rem] text-gray-600 ml-auto">{pending.length} pendientes</span>
       </div>
 
@@ -107,7 +107,7 @@ function TodoRow({ todo, onToggle, onDelete }: { todo: TodoItem; onToggle: (id: 
   const priorityDot = todo.priority === "high" ? "bg-red-500" : todo.priority === "medium" ? "bg-yellow-500" : "bg-green-500";
 
   return (
-    <div className="flex items-center gap-2 rounded-lg bg-white/[0.02] hover:bg-white/[0.04] px-2.5 py-1.5 group transition-colors">
+    <div className="flex items-center gap-2 rounded-sm bg-black/40 border border-purple-500/10 hover:border-purple-500/20 px-2.5 py-1.5 group transition-colors">
       <button onClick={() => onToggle(todo.id)} className="cursor-pointer">
         <CheckSquare className={`h-3.5 w-3.5 ${done ? "text-purple-400" : "text-gray-600"}`} />
       </button>
