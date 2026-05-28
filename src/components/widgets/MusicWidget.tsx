@@ -33,54 +33,52 @@ export function MusicWidget({ mediaInfo, onMediaControl, onClose }: MusicWidgetP
         if (timerRef.current) clearTimeout(timerRef.current);
       }}
       onMouseLeave={() => setAutoHide(true)}
-      className="animate-in fade-in slide-in-from-right-4 duration-300 rounded-2xl border border-purple-500/15 bg-[rgba(8,4,15,0.95)] backdrop-blur-xl p-5 shadow-2xl shadow-purple-500/10 w-80 relative"
+      className="animate-slide-up rounded-sm border border-purple-500/15 bg-black/95 backdrop-blur-xl p-4 shadow-2xl shadow-purple-500/10 w-72 relative"
     >
       <button
         onClick={onClose}
-        className="absolute top-3 right-3 text-gray-600 hover:text-white transition-colors cursor-pointer"
+        className="absolute top-2.5 right-2.5 h-5 w-5 flex items-center justify-center rounded-sm text-gray-600 hover:text-white hover:bg-purple-500/15 transition-all cursor-pointer"
       >
-        <X className="h-3.5 w-3.5" />
+        <X className="h-3 w-3" />
       </button>
 
       {!hasMedia ? (
-        <div className="flex items-center justify-center h-24 text-gray-500 text-sm">
-          <Music className="h-5 w-5 mr-2 opacity-50" />
+        <div className="flex items-center justify-center h-24 text-gray-500 text-xs">
+          <Music className="h-4 w-4 mr-2 opacity-50" />
           Sin reproducción activa
         </div>
       ) : (
         <>
           {/* Track Info */}
-          <div className="mb-4">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="h-8 w-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
-                <Music className="h-4 w-4 text-purple-400" />
-              </div>
-              <span className="text-xs text-purple-400 font-medium uppercase tracking-wider">
+          <div className="mb-3">
+            <div className="flex items-center gap-1.5 mb-2">
+              <Music className="h-3.5 w-3.5 text-purple-400" />
+              <span className="text-[0.65rem] text-purple-400 font-medium uppercase tracking-wider">
                 {mediaInfo?.app || "Media"}
               </span>
             </div>
-            <h3 className="text-white font-medium text-sm truncate">
+            <h3 className="text-white font-medium text-xs truncate">
               {mediaInfo?.title}
             </h3>
             {mediaInfo?.artist && (
-              <p className="text-gray-500 text-xs truncate mt-0.5">
+              <p className="text-gray-500 text-[0.65rem] truncate mt-0.5">
                 {mediaInfo.artist}
               </p>
             )}
           </div>
 
-          {/* Progress Bar (visual placeholder) */}
-          <div className="w-full h-1 bg-white/5 rounded-full mb-4 overflow-hidden">
+          {/* Progress Bar */}
+          <div className="w-full h-0.5 bg-white/5 rounded-full mb-3 overflow-hidden">
             <div
               className={cn(
-                "h-full bg-gradient-to-r from-purple-500 to-purple-400 rounded-full transition-all duration-1000",
+                "h-full bg-purple-500 rounded-full transition-all duration-1000",
                 isPlaying ? "w-2/3" : "w-1/3"
               )}
             />
           </div>
 
           {/* Controls */}
-          <div className="flex items-center justify-center gap-4">
+          <div className="flex items-center justify-center gap-3">
             <Button
               variant="icon"
               size="icon"

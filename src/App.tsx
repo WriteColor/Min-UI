@@ -1,12 +1,12 @@
 /**
  * App.tsx — MIN Asistente IA
- * Interfaz principal: Orb + ControlBar auto-hide + WidgetDock + Settings Dialog
+ * Interfaz principal: Orb + ControlBar auto-hide + CompassDock + Settings Dialog
  * Toda la lógica de WebSocket delegada al hook useWebSocket.
  */
 import { useState, useCallback } from "react";
 import Orb from "./components/Orb";
 import { ControlBar } from "./components/ControlBar";
-import { WidgetDock } from "./components/WidgetDock";
+import { CompassDock } from "./components/CompassDock";
 import { StatusDot } from "./components/StatusDot";
 import { SettingsDialog } from "./components/SettingsDialog";
 
@@ -47,11 +47,6 @@ export default function App() {
     ws.saveConfig(ws.config);
     setSettingsOpen(false);
   }, [ws]);
-
-  const handleToggleMini = useCallback(() => {
-    // For now, mini mode is a Tauri window resize — just toggle a class
-    // Full mini mode will be implemented with Tauri window API
-  }, []);
 
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-black select-none">
@@ -100,11 +95,10 @@ export default function App() {
         )}
       </div>
 
-      {/* ── Widget Dock (right edge, auto-hide) ──────────────────────────── */}
-      <WidgetDock
+      {/* ── Widget Dock (top-right, CompassDock) ──────────────────────────── */}
+      <CompassDock
         activeWidget={ws.activeWidget}
         onToggleWidget={handleToggleWidget}
-        onToggleMini={handleToggleMini}
         onOpenSettings={() => setSettingsOpen(true)}
       />
 
