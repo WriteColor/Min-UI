@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { X, Send, Mic, FileText, ChevronDown, ChevronUp } from "lucide-react";
+import { X, Send, Mic, Paperclip, ChevronDown, ChevronUp } from "lucide-react";
 
 interface Message {
   id: string;
@@ -29,7 +29,9 @@ export function Chat({
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isExpanded, setIsExpanded] = useState(true);
-  const [autoHideTimer, setAutoHideTimer] = useState<NodeJS.Timeout | null>(null);
+  const [autoHideTimer, setAutoHideTimer] = useState<NodeJS.Timeout | null>(
+    null
+  );
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -111,7 +113,7 @@ export function Chat({
         const fileMessage: Message = {
           id: `file-${Date.now()}`,
           role: "user",
-          content: `📎 ${file.name}`,
+          content: `Archivo: ${file.name}`,
           timestamp: Date.now(),
         };
         setMessages((prev) => [...prev, fileMessage]);
@@ -129,47 +131,37 @@ export function Chat({
 
   return (
     <div
-      className={`
-        fixed bottom-24 left-1/2 -translate-x-1/2 z-40
-        w-full max-w-lg mx-auto
-        transition-all duration-500 ease-out
-        ${isExpanded ? "h-[420px]" : "h-16"}
-      `}
-      style={{
-        background: "linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%)",
-        backdropFilter: "blur(20px)",
-        border: "1px solid rgba(148, 163, 184, 0.2)",
-        borderRadius: "16px",
-        boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(168, 85, 247, 0.1)",
-      }}
+      className={`fixed bottom-24 left-1/2 z-40 mx-auto w-full max-w-lg -translate-x-1/2 transition-all duration-300 ${
+        isExpanded ? "h-[420px]" : "h-14"
+      }`}
     >
-      <div className="flex flex-col h-full">
+      <div className="panel flex h-full flex-col overflow-hidden">
         {/* Header */}
         <div
-          className="flex items-center justify-between px-4 py-3 border-b border-slate-700/50 cursor-pointer"
+          className="flex cursor-pointer items-center justify-between border-b border-border px-4 py-3"
           onClick={handleToggleExpand}
         >
           <div className="flex items-center gap-3">
             <div className="relative">
-              <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-              <div className="absolute inset-0 w-2.5 h-2.5 rounded-full bg-emerald-400/50 animate-ping" />
+              <div className="h-2 w-2 rounded-full bg-success" />
+              <div className="absolute inset-0 h-2 w-2 animate-ping rounded-full bg-success/50" />
             </div>
-            <span className="text-sm font-medium text-slate-200 font-mono tracking-wide">
+            <span className="text-sm font-medium text-text-primary">
               MIN Assistant
             </span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 handleToggleExpand();
               }}
-              className="p-1.5 rounded-lg hover:bg-slate-700/50 transition-colors text-slate-400 hover:text-slate-200"
+              className="rounded-md p-1.5 text-text-muted transition-colors hover:bg-surface-elevated hover:text-text-primary"
             >
               {isExpanded ? (
-                <ChevronDown className="w-4 h-4" />
+                <ChevronDown className="h-4 w-4" />
               ) : (
-                <ChevronUp className="w-4 h-4" />
+                <ChevronUp className="h-4 w-4" />
               )}
             </button>
             <button
@@ -177,9 +169,9 @@ export function Chat({
                 e.stopPropagation();
                 onClose();
               }}
-              className="p-1.5 rounded-lg hover:bg-rose-500/20 transition-colors text-slate-400 hover:text-rose-400"
+              className="rounded-md p-1.5 text-text-muted transition-colors hover:bg-danger/10 hover:text-danger"
             >
-              <X className="w-4 h-4" />
+              <X className="h-4 w-4" />
             </button>
           </div>
         </div>
@@ -187,11 +179,11 @@ export function Chat({
         {/* Messages Area */}
         {isExpanded && (
           <>
-            <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent">
+            <div className="flex-1 space-y-3 overflow-y-auto px-4 py-3">
               {messages.length === 0 && (
-                <div className="flex flex-col items-center justify-center h-full text-slate-500 text-sm">
-                  <Mic className="w-8 h-8 mb-2 opacity-50" />
-                  <p>Speak or type a message to begin...</p>
+                <div className="flex h-full flex-col items-center justify-center text-sm text-text-muted">
+                  <Mic className="mb-2 h-8 w-8 opacity-50" />
+                  <p>Habla o escribe un mensaje...</p>
                 </div>
               )}
 
@@ -201,28 +193,25 @@ export function Chat({
                   className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   <div
-                    className={`
-                      max-w-[85%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed
-                      ${
-                        msg.role === "user"
-                          ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-br-md"
-                          : msg.role === "system"
-                          ? "bg-amber-500/20 text-amber-200 border border-amber-500/30 rounded-bl-md"
-                          : "bg-slate-700/60 text-slate-200 rounded-bl-md"
-                      }
-                      ${msg.transcription ? "font-medium" : ""}
-                      transition-all duration-300 animate-fade-in
-                    `}
+                    className={`max-w-[85%] rounded-xl px-3 py-2 text-sm ${
+                      msg.role === "user"
+                        ? "bg-accent text-white"
+                        : msg.role === "system"
+                          ? "border border-warning/30 bg-warning/10 text-warning"
+                          : "bg-surface-elevated text-text-primary"
+                    } animate-fade-in`}
                   >
                     {msg.transcription && (
-                      <div className="flex items-center gap-1.5 mb-1.5 text-xs opacity-70">
-                        <Mic className="w-3 h-3" />
-                        <span>Transcription</span>
+                      <div className="mb-1 flex items-center gap-1 text-xs opacity-70">
+                        <Mic className="h-3 w-3" />
+                        <span>Transcripción</span>
                       </div>
                     )}
-                    <span className="whitespace-pre-wrap break-words">{msg.content}</span>
+                    <span className="whitespace-pre-wrap break-words">
+                      {msg.content}
+                    </span>
                     <div
-                      className={`text-[0.65rem] mt-1.5 opacity-50 ${
+                      className={`mt-1 text-[10px] opacity-50 ${
                         msg.role === "user" ? "text-right" : "text-left"
                       }`}
                     >
@@ -238,31 +227,28 @@ export function Chat({
             </div>
 
             {/* Input Area */}
-            <div className="p-3 border-t border-slate-700/50">
+            <div className="border-t border-border p-3">
               <div className="flex items-end gap-2">
-                <div className="flex-1 relative">
+                <div className="relative flex-1">
                   <textarea
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder="Type a message or speak..."
-                    className="w-full px-4 py-2.5 pr-12 bg-slate-800/60 border border-slate-600/50 rounded-xl text-sm text-slate-200 placeholder-slate-500 resize-none focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-all"
+                    placeholder="Escribe un mensaje..."
+                    className="input min-h-[42px] max-h-[120px] resize-none pr-10"
                     rows={1}
-                    style={{
-                      maxHeight: "120px",
-                      minHeight: "42px",
-                    }}
                     onInput={(e) => {
                       const target = e.target as HTMLTextAreaElement;
                       target.style.height = "auto";
-                      target.style.height = Math.min(target.scrollHeight, 120) + "px";
+                      target.style.height =
+                        Math.min(target.scrollHeight, 120) + "px";
                     }}
                   />
                   <button
                     onClick={() => fileInputRef.current?.click()}
-                    className="absolute right-3 bottom-2.5 p-1.5 rounded-lg hover:bg-slate-700/50 transition-colors text-slate-400 hover:text-slate-200"
+                    className="absolute bottom-2.5 right-2 rounded-md p-1 text-text-muted transition-colors hover:bg-surface-elevated hover:text-text-primary"
                   >
-                    <FileText className="w-4 h-4" />
+                    <Paperclip className="h-4 w-4" />
                   </button>
                   <input
                     ref={fileInputRef}
@@ -275,26 +261,24 @@ export function Chat({
                 <button
                   onClick={handleSend}
                   disabled={!inputValue.trim()}
-                  className="p-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:from-violet-500 hover:to-purple-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40"
+                  className="btn btn-primary h-[42px] w-[42px] p-0 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  <Send className="w-4 h-4" />
+                  <Send className="h-4 w-4" />
                 </button>
               </div>
 
-              {/* Quick Actions */}
-              <div className="flex gap-2 mt-2.5 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent">
+              {/* Quick suggestions */}
+              <div className="mt-2 flex gap-2 overflow-x-auto pb-1">
                 {[
-                  "What can you help me with?",
-                  "Tell me about the weather",
-                  "Play some music",
-                  "Add a todo item",
+                  "¿Qué puedes hacer?",
+                  "Dime el clima",
+                  "Reproducir música",
+                  "Agregar tarea",
                 ].map((suggestion) => (
                   <button
                     key={suggestion}
-                    onClick={() => {
-                      setInputValue(suggestion);
-                    }}
-                    className="flex-shrink-0 px-3 py-1.5 text-xs rounded-full bg-slate-700/50 border border-slate-600/50 text-slate-300 hover:bg-slate-700 hover:border-slate-500/50 transition-all duration-200 whitespace-nowrap"
+                    onClick={() => setInputValue(suggestion)}
+                    className="shrink-0 rounded-full border border-border bg-surface-elevated px-3 py-1.5 text-xs text-text-secondary transition-colors hover:border-border-hover hover:text-text-primary"
                   >
                     {suggestion}
                   </button>

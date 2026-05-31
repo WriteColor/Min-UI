@@ -1,22 +1,28 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700"],
 });
 
 const ibmPlexMono = IBM_Plex_Mono({
   variable: "--font-ibm-plex-mono",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500"],
 });
 
 export const metadata: Metadata = {
-  title: "Min Asistente IA",
-  description: "Interfaz de usuario futurista para el Asistente IA MIN",
+  title: "Min - Asistente IA",
+  description: "Tu asistente de inteligencia artificial personal",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0a0a0b",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
@@ -27,11 +33,13 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${spaceGrotesk.variable} ${ibmPlexMono.variable} h-full w-full`}
+      className={`${spaceGrotesk.variable} ${ibmPlexMono.variable}`}
+      style={{ backgroundColor: "#0a0a0b" }}
       suppressHydrationWarning
     >
-      <body 
-        className="h-full w-full bg-transparent select-none overflow-hidden antialiased"
+      <body
+        className="bg-background text-foreground"
+        style={{ backgroundColor: "#0a0a0b", color: "#fafafa" }}
         suppressHydrationWarning
       >
         {children}
