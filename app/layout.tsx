@@ -34,12 +34,10 @@ export default function RootLayout({
     <html
       lang="es"
       className={`${spaceGrotesk.variable} ${ibmPlexMono.variable}`}
-      style={{ backgroundColor: "#0a0a0b" }}
       suppressHydrationWarning
     >
       <body
         className="bg-background text-foreground"
-        style={{ backgroundColor: "#0a0a0b", color: "#fafafa" }}
         suppressHydrationWarning
       >
         {children}

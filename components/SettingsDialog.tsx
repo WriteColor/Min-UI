@@ -190,20 +190,20 @@ export function SettingsDialog({
         <label className="text-sm font-medium text-text-primary">{label}</label>
         {desc && <p className="text-xs text-text-muted">{desc}</p>}
       </div>
-      <button
-        type="button"
-        onClick={() => onChange(!checked)}
-        className={`relative mt-0.5 inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ${
-          checked ? "bg-accent" : "bg-surface-hover"
-        }`}
-      >
-        <span
-          className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow transition duration-200 ${
-            checked ? "translate-x-4" : "translate-x-0.5"
+        <button
+          type="button"
+          onClick={() => onChange(!checked)}
+          className={`relative mt-0.5 inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ${
+            checked ? "bg-accent shadow-[0_0_8px_rgba(168,85,247,0.4)]" : "bg-surface-hover"
           }`}
-          style={{ marginTop: "2px" }}
-        />
-      </button>
+        >
+          <span
+            className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow transition duration-200 ${
+              checked ? "translate-x-4" : "translate-x-0.5"
+            }`}
+            style={{ marginTop: "2px" }}
+          />
+        </button>
     </div>
   );
 
@@ -233,17 +233,15 @@ export function SettingsDialog({
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
-      style={{ backgroundColor: "rgba(10, 10, 11, 0.8)" }}
+      style={{ backgroundColor: "rgba(10, 10, 11, 0.85)" }}
     >
       <div
         ref={modalRef}
-        className="flex h-[85vh] w-full max-w-4xl overflow-hidden rounded-xl border shadow-2xl animate-slide-up"
-        style={{ backgroundColor: "#18181b", borderColor: "#27272a" }}
+        className="panel flex h-[85vh] w-full max-w-4xl overflow-hidden shadow-2xl animate-slide-up"
       >
         {/* Sidebar */}
         <div
-          className="flex w-56 shrink-0 flex-col border-r"
-          style={{ backgroundColor: "#27272a", borderColor: "#27272a" }}
+          className="flex w-56 shrink-0 flex-col border-r border-border bg-surface-elevated"
         >
           <div className="p-4">
             <div className="flex items-center gap-2">
@@ -257,9 +255,9 @@ export function SettingsDialog({
               <button
                 key={id}
                 onClick={() => setActiveTab(id)}
-                className={`flex w-full cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors ${
+                className={`flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors ${
                   activeTab === id
-                    ? "bg-accent/10 font-medium text-accent"
+                    ? "bg-accent/10 font-medium text-accent shadow-[inset_0_0_12px_rgba(168,85,247,0.08)]"
                     : "text-text-secondary hover:bg-surface-hover hover:text-text-primary"
                 }`}
               >
@@ -276,7 +274,7 @@ export function SettingsDialog({
               <div className="rounded-md bg-surface p-2 text-xs">
                 <div className="flex items-center justify-between text-text-muted">
                   <span>Estado</span>
-                  <span className="h-1.5 w-1.5 rounded-full bg-success" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-accent shadow-[0_0_4px_var(--accent)]" />
                 </div>
                 <div className="mt-1 grid grid-cols-2 gap-1 text-text-secondary">
                   <span>MEM: {agentStatus.memory_mb}MB</span>
@@ -752,7 +750,7 @@ export function SettingsDialog({
                     <button
                       type="button"
                       onClick={handleAddApp}
-                      className="btn btn-secondary h-[42px] w-[42px] p-0"
+                      className="btn btn-secondary h-10.5 w-10.5 p-0"
                     >
                       <Plus className="h-4 w-4" />
                     </button>
@@ -768,7 +766,7 @@ export function SettingsDialog({
                     />
                   </InputField>
 
-                  <div className="mt-4 max-h-[200px] overflow-y-auto rounded-lg border border-border bg-surface-elevated">
+                  <div className="mt-4 max-h-50 overflow-y-auto rounded-lg border border-border bg-surface-elevated">
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="border-b border-border text-left text-xs text-text-muted">
@@ -783,7 +781,7 @@ export function SettingsDialog({
                           <tr key={alias} className="border-b border-border last:border-0">
                             <td className="px-3 py-2 font-medium text-text-primary">{alias}</td>
                             <td className="px-3 py-2 text-xs text-text-muted uppercase">{val.type}</td>
-                            <td className="max-w-[200px] truncate px-3 py-2 text-text-secondary">{val.path || val.id}</td>
+                            <td className="max-w-50 truncate px-3 py-2 text-text-secondary">{val.path || val.id}</td>
                             <td className="px-3 py-2">
                               <button
                                 type="button"
@@ -885,7 +883,7 @@ export function SettingsDialog({
                       type="button"
                       disabled={!agentStatus}
                       onClick={onKillAgent}
-                      className="flex h-[42px] cursor-pointer items-center justify-center gap-2 rounded-md border border-danger/30 bg-danger/10 px-4 text-sm font-medium text-danger transition-colors hover:bg-danger/20 disabled:opacity-50"
+                      className="flex h-10.5 cursor-pointer items-center justify-center gap-2 rounded-md border border-danger/30 bg-danger/10 px-4 text-sm font-medium text-danger transition-colors hover:bg-danger/20 disabled:opacity-50"
                     >
                       <Power className="h-4 w-4" />
                       Detener

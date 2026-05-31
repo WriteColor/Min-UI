@@ -252,7 +252,7 @@ export default function Orb({ state, volume }: OrbProps) {
     let _volFollow = 0.0;
     let bouncePos = 1.0;
     let lastTime = 0;
-    const clock = new THREE.Clock();
+    const clock = new THREE.Timer();
 
     const triggerRipple = () => {
       const el = document.createElement("div");
@@ -308,7 +308,7 @@ export default function Orb({ state, volume }: OrbProps) {
     const animate = () => {
       requestRef.current = requestAnimationFrame(animate);
 
-      const t = clock.getElapsedTime();
+      const t = clock.getElapsed();
       const dt = Math.min(t - lastTime, 0.05);
       lastTime = t;
 

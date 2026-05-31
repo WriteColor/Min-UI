@@ -42,6 +42,8 @@ export function ControlBar({
 
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const barsRef = useRef<number[]>([4, 4, 4, 4]);
+  const animationRef = useRef<number | null>(null);
 
   const resetHideTimer = useCallback(() => {
     if (hideTimer.current) clearTimeout(hideTimer.current);
@@ -84,6 +86,27 @@ export function ControlBar({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [focused]);
 
+  useEffect(() => {
+    if (!connected || isMuted) {
+      barsRef.current = [4, 4, 4, 4];
+      return;
+    }
+
+    const animate = () => {
+      barsRef.current = barsRef.current.map((_, idx) => {
+        const base = 4 + audioLevel * 12;
+        const variance = Math.random() * 6;
+        return Math.max(4, Math.min(16, base + variance - idx * 1.5));
+      });
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    animationRef.current = requestAnimationFrame(animate);
+    return () => {
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
+    };
+  }, [connected, isMuted, audioLevel]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const trimmed = text.trim();
@@ -102,27 +125,26 @@ export function ControlBar({
     }
   };
 
-  const level = Math.max(0, Math.min(1, audioLevel));
   const filename = currentFile ? currentFile.split(/[/\\]/).pop() : "";
 
   return (
     <div
       onMouseEnter={resetHideTimer}
-      className={`pointer-events-auto fixed inset-x-0 bottom-6 z-40 flex flex-col items-center gap-2 px-4 transition-all duration-300 ${
+      className={`pointer-events-auto fixed inset-x-0 bottom-6 z-40 flex flex-col items-center gap-3 px-4 transition-all duration-300 ${
         visible
           ? "translate-y-0 opacity-100"
           : "pointer-events-none translate-y-8 opacity-0"
       }`}
     >
       {/* Status indicator */}
-      <div className="flex items-center gap-2 rounded-full bg-surface px-3 py-1 text-xs text-text-muted">
+      <div className="flex items-center gap-2 rounded-full bg-surface/80 backdrop-blur px-3 py-1 shadow-sm">
         <div
           className={`h-1.5 w-1.5 rounded-full ${
-            connected ? "bg-success" : "bg-danger"
+            connected ? "bg-accent shadow-[0_0_6px_var(--accent)]" : "bg-danger"
           }`}
         />
-        <span className="font-mono text-[10px] uppercase tracking-wider">
-          {connected ? "Conectado" : "Sin conexión"}
+        <span className="text-[10px] font-medium uppercase tracking-widest text-text-secondary">
+          {connected ? "Conectado" : "Desconectado"}
         </span>
       </div>
 
@@ -130,8 +152,11 @@ export function ControlBar({
       <div className="flex w-full max-w-xl flex-col gap-2">
         {/* File attachment banner */}
         {currentFile && (
-          <div className="flex items-center justify-between rounded-lg bg-surface px-3 py-2 text-xs text-text-secondary animate-fade-in">
-            <span className="truncate font-mono">{filename}</span>
+          <div className="panel flex items-center justify-between px-3 py-2 text-xs animate-fade-in">
+            <div className="flex items-center gap-2">
+              <Paperclip className="h-3 w-3 text-accent" />
+              <span className="truncate font-mono text-text-secondary">{filename}</span>
+            </div>
             <button
               onClick={onClearFile}
               className="ml-2 rounded p-1 text-text-muted transition-colors hover:bg-surface-elevated hover:text-text-primary"
@@ -145,7 +170,7 @@ export function ControlBar({
         {showPathInput && (
           <form
             onSubmit={handleManualPathSubmit}
-            className="flex items-center gap-2 rounded-lg bg-surface p-2 animate-fade-in"
+            className="panel flex items-center gap-2 p-2 animate-fade-in"
           >
             <input
               type="text"
@@ -169,8 +194,8 @@ export function ControlBar({
 
         {/* Command bar */}
         <div
-          className={`flex items-center gap-2 rounded-xl border bg-surface p-2 transition-all duration-150 ${
-            focused ? "border-border-focus" : "border-border"
+          className={`flex items-center gap-2 rounded-2xl border bg-surface/90 p-1.5 shadow-lg backdrop-blur-sm transition-all duration-150 ${
+            focused ? "border-accent/40" : "border-border"
           }`}
         >
           {/* Mute button */}
@@ -178,10 +203,10 @@ export function ControlBar({
             type="button"
             onClick={onToggleMute}
             aria-label={isMuted ? "Activar micrófono" : "Silenciar micrófono"}
-            className={`flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg transition-all ${
+            className={`flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-xl transition-all ${
               isMuted
                 ? "bg-danger/10 text-danger"
-                : "bg-surface-elevated text-text-secondary hover:text-text-primary"
+                : "bg-surface-elevated text-text-secondary hover:text-accent"
             }`}
           >
             {isMuted ? (
@@ -196,10 +221,10 @@ export function ControlBar({
             type="button"
             onClick={() => setShowPathInput(!showPathInput)}
             aria-label="Adjuntar archivo"
-            className={`flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg transition-all ${
+            className={`flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-xl transition-all ${
               currentFile
                 ? "bg-accent/10 text-accent"
-                : "bg-surface-elevated text-text-secondary hover:text-text-primary"
+                : "bg-surface-elevated text-text-secondary hover:text-accent"
             }`}
           >
             <Paperclip className="h-4 w-4" />
@@ -226,7 +251,7 @@ export function ControlBar({
 
             {/* Keyboard hint */}
             {!focused && !text && (
-              <div className="hidden items-center gap-1 text-[10px] text-text-muted sm:flex">
+              <div className="hidden items-center gap-1 rounded-md bg-surface-elevated px-2 py-1 text-[10px] text-text-muted sm:flex">
                 <Keyboard className="h-3 w-3" />
                 <span className="font-mono">Ctrl+K</span>
               </div>
@@ -237,9 +262,9 @@ export function ControlBar({
               type="submit"
               disabled={!text.trim() || !connected}
               aria-label="Enviar"
-              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-all ${
+              className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl font-medium transition-all ${
                 text.trim() && connected
-                  ? "cursor-pointer bg-accent text-white hover:bg-accent-hover"
+                  ? "cursor-pointer bg-accent text-white shadow-[0_0_16px_rgba(168,85,247,0.4)] hover:shadow-[0_0_24px_rgba(168,85,247,0.6)] hover:brightness-110"
                   : "cursor-not-allowed bg-surface-elevated text-text-muted"
               }`}
             >
@@ -251,27 +276,22 @@ export function ControlBar({
               type="button"
               onClick={onOpenChat}
               aria-label="Abrir chat"
-              className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg bg-surface-elevated text-text-secondary transition-all hover:bg-surface-hover hover:text-text-primary"
+              className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-xl bg-surface-elevated text-text-secondary transition-all hover:text-accent"
             >
               <MessageCircle className="h-4 w-4" />
             </button>
           </form>
 
-          {/* Audio level indicator */}
+          {/* Audio visualizer */}
           {connected && !isMuted && (
-            <div className="flex items-center gap-0.5 border-l border-border pl-2">
-              {[0, 1, 2, 3].map((idx) => {
-                const barHeight = 4 + level * 12 * (0.6 + Math.random() * 0.4);
-                return (
-                  <div
-                    key={idx}
-                    className="w-[3px] rounded-full bg-accent transition-all duration-100"
-                    style={{
-                      height: `${Math.max(4, Math.min(16, barHeight))}px`,
-                    }}
-                  />
-                );
-              })}
+            <div className="flex items-center gap-0.5 border-l border-border/50 pl-2">
+              {barsRef.current.map((height, idx) => (
+                <div
+                  key={idx}
+                  className="w-[3px] rounded-full bg-gradient-to-t from-accent to-accent/60 shadow-[0_0_4px_rgba(168,85,247,0.5)]"
+                  style={{ height: `${height}px` }}
+                />
+              ))}
             </div>
           )}
         </div>

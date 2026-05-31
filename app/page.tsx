@@ -15,7 +15,7 @@ import { FavoritesWidget } from "../components/widgets/FavoritesWidget";
 
 import { useWebSocket } from "../hooks/useWebSocket";
 import type { MinConfig, WidgetType } from "../types";
-import { Terminal, AlertTriangle, RefreshCw } from "lucide-react";
+import { Terminal, AlertTriangle, RefreshCw, X } from "lucide-react";
 
 export default function Home() {
   const ws = useWebSocket();
@@ -26,6 +26,7 @@ export default function Home() {
 
   const [booting, setBooting] = useState(false);
   const [bootLog, setBootLog] = useState<string[]>([]);
+  const [offlineDismissed, setOfflineDismissed] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -116,21 +117,36 @@ export default function Home() {
   return (
     <main
       className="relative h-screen w-screen overflow-hidden font-sans"
-      style={{ backgroundColor: "#0a0a0b" }}
     >
       {/* Dot grid background */}
       <div className="absolute inset-0 dots-grid opacity-50" />
 
       {/* Central orb area */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="relative flex h-[320px] w-[320px] items-center justify-center md:h-[400px] md:w-[400px]">
-          {/* Orb container */}
-          <div className="h-[280px] w-[280px] md:h-[340px] md:w-[340px]">
-            <Orb state={ws.state} volume={ws.audioLevel} />
-          </div>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        {/* Orb container */}
+        <div className="relative flex h-[280px] w-[280px] items-center justify-center md:h-[340px] md:w-[340px]">
+          <Orb state={ws.state} volume={ws.audioLevel} />
 
           {/* Subtle glow under orb */}
           <div className="pointer-events-none absolute h-40 w-40 rounded-full bg-accent/10 blur-3xl" />
+        </div>
+
+        {/* State indicator */}
+        <div className="mt-6 flex flex-col items-center gap-1">
+          <span
+            className="animate-fade-in text-xs font-medium tracking-widest uppercase"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            {ws.state === "LISTENING" && "Escuchando..."}
+            {ws.state === "THINKING" && "Pensando..."}
+            {ws.state === "SPEAKING" && "Hablando..."}
+            {ws.state === "MUTED" && "Silenciado"}
+            {ws.state === "SUSPENDED" && "Suspendido"}
+            {ws.state === "OFFLINE" && "Desconectado"}
+          </span>
+          {ws.connected && ws.state !== "OFFLINE" && (
+            <div className="h-1 w-1 rounded-full bg-accent opacity-60" />
+          )}
         </div>
       </div>
 
@@ -220,9 +236,18 @@ export default function Home() {
       />
 
       {/* Connection offline overlay */}
-      {!ws.connected && (
+      {!ws.connected && !offlineDismissed && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm animate-fade-in">
-          <div className="panel w-full max-w-md space-y-5 p-6">
+          <div className="panel w-full max-w-md space-y-5 p-6 relative">
+            {/* Close button */}
+            <button
+              onClick={() => setOfflineDismissed(true)}
+              className="absolute top-4 right-4 p-1 rounded-lg hover:bg-surface-elevated text-text-muted hover:text-text-primary transition-colors"
+              aria-label="Cerrar"
+            >
+              <X className="h-4 w-4" />
+            </button>
+
             {/* Header */}
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-warning/10">

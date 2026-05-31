@@ -29,9 +29,7 @@ export function Chat({
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isExpanded, setIsExpanded] = useState(true);
-  const [autoHideTimer, setAutoHideTimer] = useState<NodeJS.Timeout | null>(
-    null
-  );
+  const autoHideTimerRef = useRef<NodeJS.Timeout | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -63,19 +61,18 @@ export function Chat({
   }, [transcription]);
 
   const resetAutoHideTimer = useCallback(() => {
-    if (autoHideTimer) clearTimeout(autoHideTimer);
+    if (autoHideTimerRef.current) clearTimeout(autoHideTimerRef.current);
     if (isOpen && isExpanded) {
-      const timer = setTimeout(() => {
+      autoHideTimerRef.current = setTimeout(() => {
         setIsExpanded(false);
       }, 8000);
-      setAutoHideTimer(timer);
     }
-  }, [autoHideTimer, isOpen, isExpanded]);
+  }, [isOpen, isExpanded]);
 
   useEffect(() => {
     resetAutoHideTimer();
     return () => {
-      if (autoHideTimer) clearTimeout(autoHideTimer);
+      if (autoHideTimerRef.current) clearTimeout(autoHideTimerRef.current);
     };
   }, [isOpen, isExpanded, resetAutoHideTimer]);
 
@@ -135,16 +132,16 @@ export function Chat({
         isExpanded ? "h-[420px]" : "h-14"
       }`}
     >
-      <div className="panel flex h-full flex-col overflow-hidden">
+      <div className="panel flex h-full flex-col overflow-hidden shadow-lg">
         {/* Header */}
         <div
-          className="flex cursor-pointer items-center justify-between border-b border-border px-4 py-3"
+          className="flex cursor-pointer items-center justify-between border-b border-border/50 px-4 py-3"
           onClick={handleToggleExpand}
         >
           <div className="flex items-center gap-3">
             <div className="relative">
-              <div className="h-2 w-2 rounded-full bg-success" />
-              <div className="absolute inset-0 h-2 w-2 animate-ping rounded-full bg-success/50" />
+              <div className="h-2 w-2 rounded-full bg-accent shadow-[0_0_6px_var(--accent)]" />
+              <div className="absolute inset-0 h-2 w-2 animate-ping rounded-full bg-accent/40" />
             </div>
             <span className="text-sm font-medium text-text-primary">
               MIN Assistant
@@ -156,7 +153,7 @@ export function Chat({
                 e.stopPropagation();
                 handleToggleExpand();
               }}
-              className="rounded-md p-1.5 text-text-muted transition-colors hover:bg-surface-elevated hover:text-text-primary"
+              className="rounded-lg p-1.5 text-text-muted transition-colors hover:bg-surface-elevated hover:text-text-primary"
             >
               {isExpanded ? (
                 <ChevronDown className="h-4 w-4" />
@@ -169,7 +166,7 @@ export function Chat({
                 e.stopPropagation();
                 onClose();
               }}
-              className="rounded-md p-1.5 text-text-muted transition-colors hover:bg-danger/10 hover:text-danger"
+              className="rounded-lg p-1.5 text-text-muted transition-colors hover:bg-danger/10 hover:text-danger"
             >
               <X className="h-4 w-4" />
             </button>
@@ -182,7 +179,9 @@ export function Chat({
             <div className="flex-1 space-y-3 overflow-y-auto px-4 py-3">
               {messages.length === 0 && (
                 <div className="flex h-full flex-col items-center justify-center text-sm text-text-muted">
-                  <Mic className="mb-2 h-8 w-8 opacity-50" />
+                  <div className="mb-3 rounded-full bg-accent/10 p-3">
+                    <Mic className="h-8 w-8 text-accent opacity-60" />
+                  </div>
                   <p>Habla o escribe un mensaje...</p>
                 </div>
               )}
@@ -193,9 +192,9 @@ export function Chat({
                   className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   <div
-                    className={`max-w-[85%] rounded-xl px-3 py-2 text-sm ${
+                    className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm ${
                       msg.role === "user"
-                        ? "bg-accent text-white"
+                        ? "bg-accent text-white shadow-[0_0_16px_rgba(168,85,247,0.35)]"
                         : msg.role === "system"
                           ? "border border-warning/30 bg-warning/10 text-warning"
                           : "bg-surface-elevated text-text-primary"
@@ -227,7 +226,7 @@ export function Chat({
             </div>
 
             {/* Input Area */}
-            <div className="border-t border-border p-3">
+            <div className="border-t border-border/50 p-3">
               <div className="flex items-end gap-2">
                 <div className="relative flex-1">
                   <textarea
@@ -246,7 +245,7 @@ export function Chat({
                   />
                   <button
                     onClick={() => fileInputRef.current?.click()}
-                    className="absolute bottom-2.5 right-2 rounded-md p-1 text-text-muted transition-colors hover:bg-surface-elevated hover:text-text-primary"
+                    className="absolute bottom-2.5 right-2 rounded-lg p-1 text-text-muted transition-colors hover:bg-surface-elevated hover:text-accent"
                   >
                     <Paperclip className="h-4 w-4" />
                   </button>
@@ -278,7 +277,7 @@ export function Chat({
                   <button
                     key={suggestion}
                     onClick={() => setInputValue(suggestion)}
-                    className="shrink-0 rounded-full border border-border bg-surface-elevated px-3 py-1.5 text-xs text-text-secondary transition-colors hover:border-border-hover hover:text-text-primary"
+                    className="shrink-0 rounded-full border border-border bg-surface-elevated px-3 py-1.5 text-xs text-text-secondary transition-colors hover:border-accent/30 hover:text-accent"
                   >
                     {suggestion}
                   </button>
