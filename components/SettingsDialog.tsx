@@ -10,18 +10,15 @@ import {
   Save,
   RefreshCw,
   Power,
-  Skull,
   Eye,
   Accessibility,
-  Camera,
   Grid,
   ChevronRight,
   Plus,
   Trash2,
-  Lock,
   EyeOff,
   X,
-  Sliders,
+  Settings,
   Play,
 } from "lucide-react";
 import { MIN_VOICES } from "../types";
@@ -44,60 +41,15 @@ interface SettingsDialogProps {
 }
 
 const TAB_ITEMS = [
-  {
-    id: "assistant",
-    label: "Asistente Core",
-    icon: User,
-    desc: "Voz del núcleo, navegador predeterminado y configuraciones del hardware.",
-  },
-  {
-    id: "guardian",
-    label: "Guardián Ocular",
-    icon: Eye,
-    desc: "Parámetros del guardián de visión e intervalos de escaneo de pantalla.",
-  },
-  {
-    id: "accessibility",
-    label: "Accesibilidad",
-    icon: Accessibility,
-    desc: "Módulos de asistencia cognitiva, motora y filtros de voz de MIN.",
-  },
-  {
-    id: "api_keys",
-    label: "IA & Spotify",
-    icon: Key,
-    desc: "Claves de API en la nube para Gemini, OpenRouter y Spotify API.",
-  },
-  {
-    id: "location",
-    label: "Localización",
-    icon: MapPin,
-    desc: "Zona horaria, geolocalización física y servicios climatológicos.",
-  },
-  {
-    id: "llm_kernel",
-    label: "Kernel LLM Local",
-    icon: Cpu,
-    desc: "Configuración experimental de LLM locales (Jan AI, LM Studio, Ollama).",
-  },
-  {
-    id: "registry",
-    label: "Aplicaciones",
-    icon: Grid,
-    desc: "Registro de accesos rápidos y alias de ejecutables locales.",
-  },
-  {
-    id: "profile",
-    label: "Perfil Operador",
-    icon: User,
-    desc: "Metadatos y hábitos de comportamiento del operador.",
-  },
-  {
-    id: "system",
-    label: "Consola de Proceso",
-    icon: Monitor,
-    desc: "Telemetría del proceso python, memoria del kernel y arranque directo.",
-  },
+  { id: "assistant", label: "Asistente", icon: User, desc: "Voz, navegador y cámara" },
+  { id: "guardian", label: "Guardián", icon: Eye, desc: "Análisis pasivo de pantalla" },
+  { id: "accessibility", label: "Accesibilidad", icon: Accessibility, desc: "Asistencia cognitiva" },
+  { id: "api_keys", label: "API Keys", icon: Key, desc: "Claves de servicios cloud" },
+  { id: "location", label: "Ubicación", icon: MapPin, desc: "Zona horaria y clima" },
+  { id: "llm_kernel", label: "LLM Local", icon: Cpu, desc: "Jan AI, LM Studio, Ollama" },
+  { id: "registry", label: "Apps", icon: Grid, desc: "Accesos directos" },
+  { id: "profile", label: "Perfil", icon: User, desc: "Datos del operador" },
+  { id: "system", label: "Sistema", icon: Monitor, desc: "Proceso y telemetría" },
 ];
 
 export function SettingsDialog({
@@ -125,7 +77,7 @@ export function SettingsDialog({
   const handleStartAgent = async () => {
     if (typeof window === "undefined") return;
     if (!(window as any).__TAURI_INTERNALS__) {
-      alert("El entorno actual no soporta Tauri.\n\nInicie el backend ejecutando 'python main.py' en la raíz del proyecto.");
+      alert("El entorno actual no soporta Tauri.\n\nInicie el backend ejecutando 'python main.py'");
       return;
     }
     setStarting(true);
@@ -137,7 +89,7 @@ export function SettingsDialog({
         setStarting(false);
       }, 2500);
     } catch (err: any) {
-      alert("Error al iniciar el asistente: " + err);
+      alert("Error al iniciar: " + err);
       setStarting(false);
     }
   };
@@ -150,7 +102,6 @@ export function SettingsDialog({
     }
   }, [open, onRequestDevices, onRequestModels, onRequestStatus]);
 
-  // ESC key to close
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && open) {
@@ -208,22 +159,17 @@ export function SettingsDialog({
 
   if (!open) return null;
 
-  // Custom UI components
+  // Reusable components
   const Card = ({ title, children }: { title: string; children: React.ReactNode }) => (
-    <div className="relative p-5 rounded-xl border border-purple-500/10 bg-purple-950/5 space-y-4">
-      <div className="absolute top-0 left-0 h-1.5 w-1.5 border-t border-l border-purple-500/40" />
-      <h4 className="text-[0.62rem] font-bold text-purple-400 font-mono tracking-widest uppercase">
-        {title}
-      </h4>
+    <div className="space-y-4 rounded-lg border border-border bg-surface p-4">
+      <h4 className="text-xs font-medium text-text-secondary">{title}</h4>
       {children}
     </div>
   );
 
   const InputField = ({ label, children }: { label: string; children: React.ReactNode }) => (
-    <div className="space-y-1.5 w-full">
-      <label className="block text-[0.62rem] font-bold uppercase tracking-wider text-purple-400/50 font-mono">
-        {label}
-      </label>
+    <div className="w-full space-y-1.5">
+      <label className="block text-xs text-text-muted">{label}</label>
       {children}
     </div>
   );
@@ -239,27 +185,23 @@ export function SettingsDialog({
     label: string;
     desc?: string;
   }) => (
-    <div className="flex items-start justify-between p-4 rounded-xl border border-purple-500/5 bg-purple-950/5 hover:border-purple-500/15 transition-all duration-300 relative overflow-hidden group">
-      <div className="absolute top-0 left-0 h-1 w-1 border-t border-l border-purple-500/30 group-hover:border-purple-500/50" />
-      <div className="space-y-1 pr-4">
-        <label className="text-xs font-bold text-purple-100 font-mono tracking-wide">
-          {label.toUpperCase()}
-        </label>
-        {desc && <p className="text-[0.62rem] text-purple-400/40 leading-relaxed font-sans">{desc}</p>}
+    <div className="flex items-start justify-between rounded-lg border border-border bg-surface-elevated p-3">
+      <div className="space-y-0.5 pr-3">
+        <label className="text-sm font-medium text-text-primary">{label}</label>
+        {desc && <p className="text-xs text-text-muted">{desc}</p>}
       </div>
       <button
         type="button"
         onClick={() => onChange(!checked)}
-        className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border border-transparent transition-colors duration-300 ease-in-out focus:outline-none mt-0.5 ${
-          checked
-            ? "bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.4)]"
-            : "bg-purple-950/40 border border-purple-500/10"
+        className={`relative mt-0.5 inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ${
+          checked ? "bg-accent" : "bg-surface-hover"
         }`}
       >
         <span
-          className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-md transition duration-300 ease-in-out ${
-            checked ? "translate-x-4" : "translate-x-0"
+          className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow transition duration-200 ${
+            checked ? "translate-x-4" : "translate-x-0.5"
           }`}
+          style={{ marginTop: "2px" }}
         />
       </button>
     </div>
@@ -274,12 +216,12 @@ export function SettingsDialog({
             type={hidden ? "password" : "text"}
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            className="w-full h-9 rounded-lg border border-purple-500/10 bg-black/50 px-3 pr-10 text-xs text-purple-200 outline-none focus:border-purple-500/35 transition-all font-mono select-text"
+            className="input pr-10"
           />
           <button
             type="button"
             onClick={() => setHidden(!hidden)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-purple-400/40 hover:text-purple-300 transition-colors"
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-text-muted transition-colors hover:text-text-primary"
           >
             {hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
@@ -289,151 +231,141 @@ export function SettingsDialog({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in pointer-events-auto">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
+      style={{ backgroundColor: "rgba(10, 10, 11, 0.8)" }}
+    >
       <div
         ref={modalRef}
-        className="max-w-4xl w-full h-[85vh] flex rounded-xl border border-purple-500/20 bg-black/95 shadow-[0_0_50px_rgba(168,85,247,0.15)] overflow-hidden animate-slide-up text-purple-100 relative"
+        className="flex h-[85vh] w-full max-w-4xl overflow-hidden rounded-xl border shadow-2xl animate-slide-up"
+        style={{ backgroundColor: "#18181b", borderColor: "#27272a" }}
       >
-        <div className="hud-scanline" />
-
-        {/* Sidebar Nav */}
-        <div className="w-60 border-r border-purple-500/10 p-6 flex flex-col justify-between shrink-0 bg-purple-950/5 relative z-10 select-none">
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-xs font-bold uppercase tracking-widest text-purple-400 flex items-center gap-2 font-mono">
-                <Sliders className="h-4 w-4 animate-pulse text-purple-400" /> MASTER_PANEL
-              </h3>
-              <p className="text-[0.62rem] text-purple-400/40 mt-1 leading-relaxed font-sans">
-                Consola central de configuración del asistente MIN.
-              </p>
+        {/* Sidebar */}
+        <div
+          className="flex w-56 shrink-0 flex-col border-r"
+          style={{ backgroundColor: "#27272a", borderColor: "#27272a" }}
+        >
+          <div className="p-4">
+            <div className="flex items-center gap-2">
+              <Settings className="h-4 w-4 text-accent" />
+              <span className="text-sm font-semibold text-text-primary">Ajustes</span>
             </div>
-
-            <nav className="space-y-1 max-h-[50vh] overflow-y-auto">
-              {TAB_ITEMS.map(({ id, label, icon: Icon }) => (
-                <button
-                  key={id}
-                  onClick={() => setActiveTab(id)}
-                  className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all text-left group cursor-pointer ${
-                    activeTab === id
-                      ? "text-purple-300 bg-purple-500/15 border-l-2 border-purple-500 font-semibold font-mono"
-                      : "text-purple-400/40 hover:text-purple-300 hover:bg-purple-500/5 font-sans"
-                  }`}
-                >
-                  <div className="flex items-center gap-2.5">
-                    <Icon className="h-4 w-4" />
-                    <span>{label}</span>
-                  </div>
-                  <ChevronRight
-                    className={`h-3 w-3 transition-all duration-300 ${
-                      activeTab === id
-                        ? "opacity-100 translate-x-0.5 text-purple-400"
-                        : "opacity-0"
-                    }`}
-                  />
-                </button>
-              ))}
-            </nav>
           </div>
 
-          {/* Process Telemetry Info */}
+          <nav className="flex-1 space-y-0.5 overflow-y-auto px-2">
+            {TAB_ITEMS.map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                onClick={() => setActiveTab(id)}
+                className={`flex w-full cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors ${
+                  activeTab === id
+                    ? "bg-accent/10 font-medium text-accent"
+                    : "text-text-secondary hover:bg-surface-hover hover:text-text-primary"
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+                <span>{label}</span>
+                {activeTab === id && <ChevronRight className="ml-auto h-3 w-3" />}
+              </button>
+            ))}
+          </nav>
+
+          {/* Process status */}
           {agentStatus && (
-            <div className="rounded-lg border border-purple-500/10 bg-purple-950/15 p-3 space-y-1.5 font-mono">
-              <div className="flex items-center justify-between text-[0.55rem] text-purple-400/50 font-bold uppercase tracking-widest">
-                <span>CONN_STATE</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-ping" />
-              </div>
-              <div className="grid grid-cols-2 gap-1 text-[0.62rem] text-purple-300/60">
-                <div>MEM: <span className="text-purple-100">{agentStatus.memory_mb}MB</span></div>
-                <div>PID: <span className="text-purple-100">{agentStatus.pid}</span></div>
+            <div className="border-t border-border p-3">
+              <div className="rounded-md bg-surface p-2 text-xs">
+                <div className="flex items-center justify-between text-text-muted">
+                  <span>Estado</span>
+                  <span className="h-1.5 w-1.5 rounded-full bg-success" />
+                </div>
+                <div className="mt-1 grid grid-cols-2 gap-1 text-text-secondary">
+                  <span>MEM: {agentStatus.memory_mb}MB</span>
+                  <span>PID: {agentStatus.pid}</span>
+                </div>
               </div>
             </div>
           )}
         </div>
 
-        {/* Content Pane */}
-        <div className="flex-grow flex flex-col overflow-hidden bg-black/30 relative z-10">
-          <header className="px-8 py-5 border-b border-purple-500/10 flex items-center justify-between shrink-0 select-none">
+        {/* Content */}
+        <div className="flex flex-1 flex-col overflow-hidden">
+          <header className="flex items-center justify-between border-b border-border px-6 py-4">
             <div>
-              <h2 className="text-xs font-bold text-white font-mono tracking-widest uppercase">
+              <h2 className="text-sm font-semibold text-text-primary">
                 {TAB_ITEMS.find((t) => t.id === activeTab)?.label}
               </h2>
-              <p className="text-[0.68rem] text-purple-400/40 mt-1 font-sans">
+              <p className="text-xs text-text-muted">
                 {TAB_ITEMS.find((t) => t.id === activeTab)?.desc}
               </p>
             </div>
             <button
               onClick={() => onOpenChange(false)}
-              className="h-7 w-7 rounded-full flex items-center justify-center text-purple-400/50 hover:text-purple-200 hover:bg-purple-500/10 transition-colors duration-300 cursor-pointer"
+              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md text-text-muted transition-colors hover:bg-surface-elevated hover:text-text-primary"
             >
               <X className="h-4 w-4" />
             </button>
           </header>
 
-          <div className="flex-1 overflow-y-auto px-8 py-6 space-y-6">
-            {/* 1. ASSISTENTE CORE */}
+          <div className="flex-1 space-y-4 overflow-y-auto p-6">
+            {/* ASSISTANT TAB */}
             {activeTab === "assistant" && (
-              <div className="space-y-5 animate-fade-in">
-                <Card title="VOICE & ENVIRONMENT">
-                  <div className="grid grid-cols-2 gap-4">
-                    <InputField label="Voz del asistente (TTS)">
+              <div className="space-y-4 animate-fade-in">
+                <Card title="Voz y navegador">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <InputField label="Voz del asistente">
                       <select
                         value={config.min_voice || "Aoede"}
                         onChange={(e) => onConfigChange("min_voice", e.target.value)}
-                        className="w-full h-9 rounded-lg border border-purple-500/10 bg-black/60 px-3 text-xs text-purple-200 outline-none focus:border-purple-500/35 cursor-pointer transition-all font-mono"
+                        className="input"
                       >
-                        <optgroup label="Voces Femeninas" className="bg-black text-purple-200">
+                        <optgroup label="Voces Femeninas">
                           {Object.entries(MIN_VOICES)
                             .filter(([, meta]) => meta[0] === "Femenina")
                             .map(([name, meta]) => (
-                              <option key={name} value={name}>
-                                {name} — {meta[1]}
-                              </option>
+                              <option key={name} value={name}>{name} - {meta[1]}</option>
                             ))}
                         </optgroup>
-                        <optgroup label="Voces Masculinas" className="bg-black text-purple-200">
+                        <optgroup label="Voces Masculinas">
                           {Object.entries(MIN_VOICES)
                             .filter(([, meta]) => meta[0] === "Masculina")
                             .map(([name, meta]) => (
-                              <option key={name} value={name}>
-                                {name} — {meta[1]}
-                              </option>
+                              <option key={name} value={name}>{name} - {meta[1]}</option>
                             ))}
                         </optgroup>
                       </select>
                     </InputField>
-
-                    <InputField label="Preferencia de Navegador">
+                    <InputField label="Navegador">
                       <select
                         value={config.browser_preference || "auto"}
                         onChange={(e) => onConfigChange("browser_preference", e.target.value)}
-                        className="w-full h-9 rounded-lg border border-purple-500/10 bg-black/60 px-3 text-xs text-purple-200 outline-none focus:border-purple-500/35 cursor-pointer transition-all font-mono"
+                        className="input"
                       >
-                        <option value="auto" className="bg-black text-purple-200">Autodetectar</option>
-                        <option value="chrome" className="bg-black text-purple-200">Google Chrome</option>
-                        <option value="brave" className="bg-black text-purple-200">Brave Browser</option>
-                        <option value="edge" className="bg-black text-purple-200">Microsoft Edge</option>
-                        <option value="firefox" className="bg-black text-purple-200">Mozilla Firefox</option>
+                        <option value="auto">Autodetectar</option>
+                        <option value="chrome">Chrome</option>
+                        <option value="brave">Brave</option>
+                        <option value="edge">Edge</option>
+                        <option value="firefox">Firefox</option>
                       </select>
                     </InputField>
                   </div>
                 </Card>
 
-                <Card title="CAMERA HARDWARE">
-                  <div className="grid grid-cols-2 gap-4">
+                <Card title="Cámara">
+                  <div className="grid gap-4 sm:grid-cols-2">
                     <Switch
                       checked={config.camera_enabled ?? true}
                       onChange={(v) => onConfigChange("camera_enabled", v)}
-                      label="Capturar Cámara Web"
-                      desc="Permite al asistente realizar capturas y videovigilancia."
+                      label="Habilitar cámara"
+                      desc="Permite capturas de video"
                     />
-                    <InputField label="Índice del dispositivo de cámara">
+                    <InputField label="Índice de cámara">
                       <input
                         type="number"
                         min={0}
                         max={9}
                         value={config.camera_index ?? 0}
                         onChange={(e) => onConfigChange("camera_index", parseInt(e.target.value) || 0)}
-                        className="w-full h-9 rounded-lg border border-purple-500/10 bg-purple-950/5 px-3 text-xs text-purple-200 outline-none focus:border-purple-500/35 transition-all font-mono select-text"
+                        className="input"
                       />
                     </InputField>
                   </div>
@@ -441,22 +373,20 @@ export function SettingsDialog({
               </div>
             )}
 
-            {/* 2. GUARDIÁN OCULAR */}
+            {/* GUARDIAN TAB */}
             {activeTab === "guardian" && (
               <div className="space-y-4 animate-fade-in">
-                <Card title="VISION PASSIVE SYSTEM">
+                <Card title="Guardián de visión">
                   <Switch
                     checked={config.vision_guardian?.enabled ?? false}
                     onChange={(v) => handleVisionGuardianChange("enabled", v)}
-                    label="Guardián de Visión Activo"
-                    desc="Activa el análisis pasivo de pantalla para avisar al operador si necesita soporte cognitivo."
+                    label="Activar guardián"
+                    desc="Análisis pasivo de pantalla para soporte cognitivo"
                   />
-                  <div className="space-y-2 mt-4">
-                    <div className="flex justify-between text-xs text-purple-300 font-mono">
-                      <span>INTERVALO_ESCANEO_PANTALLA</span>
-                      <span className="text-purple-400 font-semibold">
-                        {config.vision_guardian?.interval ?? 120}s
-                      </span>
+                  <div className="mt-4 space-y-2">
+                    <div className="flex justify-between text-xs">
+                      <span className="text-text-muted">Intervalo de escaneo</span>
+                      <span className="font-medium text-text-primary">{config.vision_guardian?.interval ?? 120}s</span>
                     </div>
                     <input
                       type="range"
@@ -465,184 +395,173 @@ export function SettingsDialog({
                       step={10}
                       value={config.vision_guardian?.interval ?? 120}
                       onChange={(e) => handleVisionGuardianChange("interval", parseInt(e.target.value) || 120)}
-                      className="w-full h-1 bg-purple-950/40 rounded-full appearance-none cursor-pointer accent-purple-500"
+                      className="w-full"
                     />
                   </div>
                 </Card>
               </div>
             )}
 
-            {/* 3. ACCESIBILIDAD */}
+            {/* ACCESSIBILITY TAB */}
             {activeTab === "accessibility" && (
-              <div className="space-y-5 animate-fade-in">
-                <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-4 animate-fade-in">
+                <div className="grid gap-3 sm:grid-cols-2">
                   <Switch
                     checked={config.accessibility?.task_simplification_enabled ?? true}
                     onChange={(v) => handleAccessibilityChange("task_simplification_enabled", v)}
                     label="Simplificar tareas"
-                    desc="Desglosa instrucciones complejas en subtareas secuenciales."
+                    desc="Desglosa instrucciones complejas"
                   />
                   <Switch
                     checked={config.accessibility?.emotional_regulation_enabled ?? true}
                     onChange={(v) => handleAccessibilityChange("emotional_regulation_enabled", v)}
                     label="Control de estrés"
-                    desc="Ajusta el tono de voz de MIN basado en el estrés del operador."
+                    desc="Ajusta el tono según el estrés"
                   />
                   <Switch
                     checked={config.accessibility?.routine_gamification_enabled ?? true}
                     onChange={(v) => handleAccessibilityChange("routine_gamification_enabled", v)}
                     label="Gamificar rutinas"
-                    desc="Otorga insignias cibernéticas al cumplir tareas diarias."
+                    desc="Insignias al cumplir tareas"
                   />
                   <Switch
                     checked={config.accessibility?.eye_tracking_enabled ?? false}
                     onChange={(v) => handleAccessibilityChange("eye_tracking_enabled", v)}
                     label="Eye Tracking"
-                    desc="Seguimiento ocular experimental para navegación sin manos."
+                    desc="Navegación sin manos"
                   />
                   <Switch
                     checked={config.accessibility?.micro_movement_enabled ?? false}
                     onChange={(v) => handleAccessibilityChange("micro_movement_enabled", v)}
                     label="Gestos faciales"
-                    desc="Control básico del cursor mediante micro-gestos en webcam."
+                    desc="Control por micro-gestos"
                   />
                   <Switch
                     checked={config.accessibility?.high_contrast_mode ?? false}
                     onChange={(v) => handleAccessibilityChange("high_contrast_mode", v)}
-                    label="Alto Contraste"
-                    desc="Ajusta los bordes vectoriales con mayor luminosidad."
+                    label="Alto contraste"
+                    desc="Mayor luminosidad"
                   />
                 </div>
 
-                <Card title="SPEECH FILTERS & FONTS">
-                  <div className="grid grid-cols-2 gap-4">
-                    <InputField label="Umbral de error de voz (VAD)">
-                      <div className="space-y-1">
-                        <div className="flex justify-between text-[0.62rem] text-purple-400/40 font-mono">
-                          <span>SENSITIV_VAL:</span>
-                          <span className="font-semibold text-purple-400">{config.accessibility?.speech_error_threshold ?? 0.5}</span>
-                        </div>
-                        <input
-                          type="range"
-                          min={0.1}
-                          max={0.9}
-                          step={0.05}
-                          value={config.accessibility?.speech_error_threshold ?? 0.5}
-                          onChange={(e) => handleAccessibilityChange("speech_error_threshold", parseFloat(e.target.value) || 0.5)}
-                          className="w-full h-1 bg-purple-950/40 rounded-full appearance-none cursor-pointer accent-purple-500"
-                        />
+                <Card title="Voz y fuentes">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-xs">
+                        <span className="text-text-muted">Umbral de error de voz</span>
+                        <span className="font-medium text-text-primary">{config.accessibility?.speech_error_threshold ?? 0.5}</span>
                       </div>
-                    </InputField>
-
-                    <InputField label="Escala global de fuentes (UI)">
-                      <div className="space-y-1">
-                        <div className="flex justify-between text-[0.62rem] text-purple-400/40 font-mono">
-                          <span>SCALE_RATIO:</span>
-                          <span className="font-semibold text-purple-400">{config.accessibility?.font_size_scale ?? 1.0}x</span>
-                        </div>
-                        <input
-                          type="range"
-                          min={0.8}
-                          max={1.5}
-                          step={0.05}
-                          value={config.accessibility?.font_size_scale ?? 1.0}
-                          onChange={(e) => handleAccessibilityChange("font_size_scale", parseFloat(e.target.value) || 1.0)}
-                          className="w-full h-1 bg-purple-950/40 rounded-full appearance-none cursor-pointer accent-purple-500"
-                        />
+                      <input
+                        type="range"
+                        min={0.1}
+                        max={0.9}
+                        step={0.05}
+                        value={config.accessibility?.speech_error_threshold ?? 0.5}
+                        onChange={(e) => handleAccessibilityChange("speech_error_threshold", parseFloat(e.target.value))}
+                        className="w-full"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-xs">
+                        <span className="text-text-muted">Escala de fuentes</span>
+                        <span className="font-medium text-text-primary">{config.accessibility?.font_size_scale ?? 1.0}x</span>
                       </div>
-                    </InputField>
+                      <input
+                        type="range"
+                        min={0.8}
+                        max={1.5}
+                        step={0.05}
+                        value={config.accessibility?.font_size_scale ?? 1.0}
+                        onChange={(e) => handleAccessibilityChange("font_size_scale", parseFloat(e.target.value))}
+                        className="w-full"
+                      />
+                    </div>
                   </div>
                 </Card>
               </div>
             )}
 
-            {/* 4. IA & SPOTIFY */}
+            {/* API KEYS TAB */}
             {activeTab === "api_keys" && (
-              <div className="space-y-5 animate-fade-in">
-                <Card title="LLM SERVICE PROVIDER">
-                  <InputField label="Proveedor de LLM Activo">
+              <div className="space-y-4 animate-fade-in">
+                <Card title="Proveedor LLM">
+                  <InputField label="Proveedor activo">
                     <select
                       value={config.llm_provider || "gemini"}
                       onChange={(e) => onConfigChange("llm_provider", e.target.value)}
-                      className="w-full h-9 rounded-lg border border-purple-500/10 bg-black/60 px-3 text-xs text-purple-200 outline-none focus:border-purple-500/35 cursor-pointer transition-all font-mono"
+                      className="input"
                     >
-                      <option value="gemini" className="bg-black text-purple-200">Google Gemini (Recomendado)</option>
-                      <option value="openrouter" className="bg-black text-purple-200">OpenRouter Router</option>
-                      <option value="minimax" className="bg-black text-purple-200">MiniMax M2.7 (Token Plan)</option>
-                      <option value="ollama_cloud" className="bg-black text-purple-200">Ollama Cloud (Cloud, Free Models)</option>
-                      <option value="nvidia_nim" className="bg-black text-purple-200">NVIDIA NIM (Free Tier)</option>
-                      <option value="compatible_local_openai" className="bg-black text-purple-200">OpenAI API Local (Jan AI, LM Studio)</option>
+                      <option value="gemini">Google Gemini</option>
+                      <option value="openrouter">OpenRouter</option>
+                      <option value="minimax">MiniMax</option>
+                      <option value="ollama_cloud">Ollama Cloud</option>
+                      <option value="nvidia_nim">NVIDIA NIM</option>
+                      <option value="compatible_local_openai">OpenAI Local</option>
                     </select>
                   </InputField>
                 </Card>
 
-                <Card title="MINIMAX LLM (M2.7 TOKEN PLAN)">
+                <Card title="MiniMax">
                   <SecretField
-                    label="MiniMax API Key (Token Plan)"
+                    label="API Key"
                     value={config.minimax_api_key || ""}
                     onChange={(v) => onConfigChange("minimax_api_key", v)}
                   />
-                  <InputField label="Modelo MiniMax LLM">
+                  <InputField label="Modelo">
                     <select
                       value={config.minimax_llm_model || "MiniMax-M2.7"}
                       onChange={(e) => onConfigChange("minimax_llm_model", e.target.value)}
-                      className="w-full h-9 rounded-lg border border-purple-500/10 bg-black/60 px-3 text-xs text-purple-200 outline-none focus:border-purple-500/35 cursor-pointer font-mono"
+                      className="input"
                     >
-                      <option value="MiniMax-M2.7" className="bg-black text-purple-200">MiniMax-M2.7 (204.8K ctx, ~60 tps)</option>
-                      <option value="MiniMax-M2.7-highspeed" className="bg-black text-purple-200">MiniMax-M2.7 Highspeed (~100 tps)</option>
-                      <option value="MiniMax-M2.5" className="bg-black text-purple-200">MiniMax-M2.5 (204.8K ctx, ~60 tps)</option>
-                      <option value="MiniMax-M2.5-highspeed" className="bg-black text-purple-200">MiniMax-M2.5 Highspeed (~100 tps)</option>
-                      <option value="MiniMax-M2.1" className="bg-black text-purple-200">MiniMax-M2.1 (204.8K ctx)</option>
-                      <option value="MiniMax-M2.1-highspeed" className="bg-black text-purple-200">MiniMax-M2.1 Highspeed</option>
+                      <option value="MiniMax-M2.7">MiniMax-M2.7</option>
+                      <option value="MiniMax-M2.7-highspeed">MiniMax-M2.7 Highspeed</option>
+                      <option value="MiniMax-M2.5">MiniMax-M2.5</option>
+                      <option value="MiniMax-M2.1">MiniMax-M2.1</option>
                     </select>
                   </InputField>
                 </Card>
 
-                <Card title="OLLAMA CLOUD (cloud.ollama.com)">
+                <Card title="Ollama Cloud">
                   <SecretField
-                    label="Ollama Cloud API Key"
+                    label="API Key"
                     value={config.ollama_cloud_api_key || ""}
                     onChange={(v) => onConfigChange("ollama_cloud_api_key", v)}
                   />
-                  <InputField label="Modelo Ollama Cloud">
+                  <InputField label="Modelo">
                     <select
                       value={config.ollama_cloud_model || "nemotron-3-super:cloud"}
                       onChange={(e) => onConfigChange("ollama_cloud_model", e.target.value)}
-                      className="w-full h-9 rounded-lg border border-purple-500/10 bg-black/60 px-3 text-xs text-purple-200 outline-none focus:border-purple-500/35 cursor-pointer font-mono"
+                      className="input"
                     >
-                      <option value="nemotron-3-super:cloud" className="bg-black text-purple-200">Nemotron 3 Super (Cloud) - No sub required</option>
-                      <option value="gemma4:31b-cloud" className="bg-black text-purple-200">Gemma 4 31B (Cloud) - No sub required</option>
-                      <option value="llama3.2:70b-cloud" className="bg-black text-purple-200">Llama 3.2 70B (Cloud)</option>
-                      <option value="qwen2.5:72b-cloud" className="bg-black text-purple-200">Qwen 2.5 72B (Cloud)</option>
-                      <option value="mistral-nemo:12b-cloud" className="bg-black text-purple-200">Mistral Nemo 12B (Cloud)</option>
+                      <option value="nemotron-3-super:cloud">Nemotron 3 Super</option>
+                      <option value="gemma4:31b-cloud">Gemma 4 31B</option>
+                      <option value="llama3.2:70b-cloud">Llama 3.2 70B</option>
+                      <option value="qwen2.5:72b-cloud">Qwen 2.5 72B</option>
                     </select>
                   </InputField>
                 </Card>
 
-                <Card title="NVIDIA NIM (console.nvidia.com)">
+                <Card title="NVIDIA NIM">
                   <SecretField
-                    label="NVIDIA NIM API Key"
+                    label="API Key"
                     value={config.nvidia_nim_api_key || ""}
                     onChange={(v) => onConfigChange("nvidia_nim_api_key", v)}
                   />
-                  <InputField label="Modelo NVIDIA NIM">
+                  <InputField label="Modelo">
                     <select
                       value={config.nvidia_nim_model || "meta/llama-3.1-70b-instruct"}
                       onChange={(e) => onConfigChange("nvidia_nim_model", e.target.value)}
-                      className="w-full h-9 rounded-lg border border-purple-500/10 bg-black/60 px-3 text-xs text-purple-200 outline-none focus:border-purple-500/35 cursor-pointer font-mono"
+                      className="input"
                     >
-                      <option value="meta/llama-3.1-405b-instruct" className="bg-black text-purple-200">Llama 3.1 405B Instruct</option>
-                      <option value="meta/llama-3.1-70b-instruct" className="bg-black text-purple-200">Llama 3.1 70B Instruct</option>
-                      <option value="meta/llama-3.1-8b-instruct" className="bg-black text-purple-200">Llama 3.1 8B Instruct</option>
-                      <option value="mistralai/mixtral-8x7b-instruct-v0.1" className="bg-black text-purple-200">Mixtral 8x7B Instruct</option>
-                      <option value="mistralai/mistral-7b-instruct-v0.3" className="bg-black text-purple-200">Mistral 7B Instruct v0.3</option>
-                      <option value="nvidia/llama-3.1-nemotron-70b-instruct" className="bg-black text-purple-200">Nemotron 70B Instruct</option>
-                      <option value="google/gemma-2-27b-instruct" className="bg-black text-purple-200">Gemma 2 27B Instruct</option>
+                      <option value="meta/llama-3.1-405b-instruct">Llama 3.1 405B</option>
+                      <option value="meta/llama-3.1-70b-instruct">Llama 3.1 70B</option>
+                      <option value="meta/llama-3.1-8b-instruct">Llama 3.1 8B</option>
+                      <option value="mistralai/mixtral-8x7b-instruct-v0.1">Mixtral 8x7B</option>
                     </select>
                   </InputField>
                 </Card>
 
-                <Card title="CLOUD API INTEGRATIONS">
+                <Card title="Gemini y OpenRouter">
                   <SecretField
                     label="Gemini API Key"
                     value={config.gemini_api_key || ""}
@@ -655,54 +574,54 @@ export function SettingsDialog({
                   />
                 </Card>
 
-                <Card title="SPOTIFY MUSIC OAUTH">
-                  <div className="grid grid-cols-2 gap-4">
+                <Card title="Spotify">
+                  <div className="grid gap-4 sm:grid-cols-2">
                     <SecretField
-                      label="Spotify Client ID"
+                      label="Client ID"
                       value={config.spotify_client_id || ""}
                       onChange={(v) => onConfigChange("spotify_client_id", v)}
                     />
                     <SecretField
-                      label="Spotify Client Secret"
+                      label="Client Secret"
                       value={config.spotify_client_secret || ""}
                       onChange={(v) => onConfigChange("spotify_client_secret", v)}
                     />
                   </div>
-                  <InputField label="Redirect URI de Spotify (OAuth)">
+                  <InputField label="Redirect URI">
                     <input
                       type="text"
                       value={config.spotify_redirect_uri || "http://127.0.0.1:8888/callback"}
                       onChange={(e) => onConfigChange("spotify_redirect_uri", e.target.value)}
-                      className="w-full h-9 rounded-lg border border-purple-500/10 bg-purple-950/5 px-3 text-xs text-purple-200 outline-none focus:border-purple-500/35 transition-all font-mono select-text"
+                      className="input"
                     />
                   </InputField>
                 </Card>
               </div>
             )}
 
-            {/* 5. GEOLOCALIZACION */}
+            {/* LOCATION TAB */}
             {activeTab === "location" && (
               <div className="space-y-4 animate-fade-in">
-                <Card title="METEO POSITIONING">
-                  <InputField label="Modo de Localización">
+                <Card title="Ubicación">
+                  <InputField label="Modo">
                     <select
                       value={config.location_mode || "system"}
                       onChange={(e) => onConfigChange("location_mode", e.target.value)}
-                      className="w-full h-9 rounded-lg border border-purple-500/10 bg-black/60 px-3 text-xs text-purple-200 outline-none focus:border-purple-500/35 cursor-pointer transition-all font-mono"
+                      className="input"
                     >
-                      <option value="system" className="bg-black text-purple-200">AUTOMÁTICO (IP GEOLOC)</option>
-                      <option value="manual" className="bg-black text-purple-200">COORDENADAS MANUALES</option>
+                      <option value="system">Automático (IP)</option>
+                      <option value="manual">Manual</option>
                     </select>
                   </InputField>
 
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid gap-4 sm:grid-cols-3">
                     <InputField label="Ciudad">
                       <input
                         type="text"
                         value={config.location_city || ""}
                         onChange={(e) => onConfigChange("location_city", e.target.value)}
                         placeholder="Honduras"
-                        className="w-full h-9 rounded-lg border border-purple-500/10 bg-purple-950/5 px-3 text-xs text-purple-200 outline-none focus:border-purple-500/35 transition-all font-mono select-text"
+                        className="input"
                       />
                     </InputField>
                     <InputField label="Latitud">
@@ -711,7 +630,7 @@ export function SettingsDialog({
                         value={config.location_lat || ""}
                         onChange={(e) => onConfigChange("location_lat", e.target.value)}
                         placeholder="14.0"
-                        className="w-full h-9 rounded-lg border border-purple-500/10 bg-purple-950/5 px-3 text-xs text-purple-200 outline-none focus:border-purple-500/35 transition-all font-mono select-text"
+                        className="input"
                       />
                     </InputField>
                     <InputField label="Longitud">
@@ -720,88 +639,82 @@ export function SettingsDialog({
                         value={config.location_lon || ""}
                         onChange={(e) => onConfigChange("location_lon", e.target.value)}
                         placeholder="-87.0"
-                        className="w-full h-9 rounded-lg border border-purple-500/10 bg-purple-950/5 px-3 text-xs text-purple-200 outline-none focus:border-purple-500/35 transition-all font-mono select-text"
+                        className="input"
                       />
                     </InputField>
                   </div>
 
-                  <InputField label="Zona Horaria (Timezone)">
+                  <InputField label="Zona horaria">
                     <input
                       type="text"
                       value={config.timezone || ""}
                       onChange={(e) => onConfigChange("timezone", e.target.value)}
                       placeholder="America/Tegucigalpa"
-                      className="w-full h-9 rounded-lg border border-purple-500/10 bg-purple-950/5 px-3 text-xs text-purple-200 outline-none focus:border-purple-500/35 transition-all font-mono select-text"
+                      className="input"
                     />
                   </InputField>
                 </Card>
               </div>
             )}
 
-            {/* 6. KERNEL LLM LOCAL */}
+            {/* LLM KERNEL TAB */}
             {activeTab === "llm_kernel" && (
-              <div className="space-y-5 animate-fade-in">
-                <Card title="LOCAL COMPATIBLE OPENAI (JAN AI / LM STUDIO)">
-                  <InputField label="URL Base de API Local">
+              <div className="space-y-4 animate-fade-in">
+                <Card title="OpenAI Local (Jan AI / LM Studio)">
+                  <InputField label="URL Base">
                     <input
                       type="text"
                       value={config.compatible_local_openai_base_url || "http://127.0.0.1:1337/v1"}
                       onChange={(e) => onConfigChange("compatible_local_openai_base_url", e.target.value)}
-                      placeholder="http://127.0.0.1:1337/v1"
-                      className="w-full h-9 rounded-lg border border-purple-500/10 bg-purple-950/5 px-3 text-xs text-purple-200 outline-none focus:border-purple-500/35 transition-all font-mono select-text"
+                      className="input"
                     />
                   </InputField>
-
-                  <InputField label="Identificador de Modelo Local">
+                  <InputField label="Modelo">
                     <input
                       type="text"
                       value={config.compatible_local_openai_model || "mistral-7b-instruct"}
                       onChange={(e) => onConfigChange("compatible_local_openai_model", e.target.value)}
-                      placeholder="mistral-7b-instruct"
-                      className="w-full h-9 rounded-lg border border-purple-500/10 bg-purple-950/5 px-3 text-xs text-purple-200 outline-none focus:border-purple-500/35 transition-all font-mono select-text"
+                      className="input"
                     />
                   </InputField>
-
                   <SecretField
-                    label="API Key Local (Opcional)"
+                    label="API Key (opcional)"
                     value={config.compatible_local_openai_api_key || ""}
                     onChange={(v) => onConfigChange("compatible_local_openai_api_key", v)}
                   />
-
                   <Switch
                     checked={config.compatible_local_openai_reasoning ?? false}
                     onChange={(v) => onConfigChange("compatible_local_openai_reasoning", v)}
-                    label="Habilitar Modo Razonamiento"
-                    desc="Ajusta el procesamiento de respuestas para soportar razonamientos secuenciales profundos."
+                    label="Modo razonamiento"
+                    desc="Soporta razonamientos secuenciales"
                   />
                 </Card>
 
-                <Card title="AUDIO DEVICE CHANNELS">
-                  <div className="grid grid-cols-2 gap-4">
-                    <InputField label="Dispositivo de Entrada (Mic)">
+                <Card title="Dispositivos de audio">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <InputField label="Micrófono">
                       <select
                         value={config.mic_device || "auto"}
                         onChange={(e) => onConfigChange("mic_device", e.target.value)}
-                        className="w-full h-9 rounded-lg border border-purple-500/10 bg-black/60 px-3 text-xs text-purple-200 outline-none focus:border-purple-500/35 cursor-pointer font-mono"
+                        className="input"
                       >
-                        <option value="auto" className="bg-black text-purple-200">Autodetectar Micrófono</option>
+                        <option value="auto">Autodetectar</option>
                         {audioDevices.microphones.map((dev) => (
-                          <option key={dev.index} value={dev.name} className="bg-black text-purple-200">
+                          <option key={dev.index} value={dev.name}>
                             {dev.name} ({dev.channels_in} in)
                           </option>
                         ))}
                       </select>
                     </InputField>
-
-                    <InputField label="Dispositivo de Salida (Speaker)">
+                    <InputField label="Altavoz">
                       <select
                         value={config.speaker_device || "auto"}
                         onChange={(e) => onConfigChange("speaker_device", e.target.value)}
-                        className="w-full h-9 rounded-lg border border-purple-500/10 bg-black/60 px-3 text-xs text-purple-200 outline-none focus:border-purple-500/35 cursor-pointer font-mono"
+                        className="input"
                       >
-                        <option value="auto" className="bg-black text-purple-200">Autodetectar Altavoz</option>
+                        <option value="auto">Autodetectar</option>
                         {audioDevices.speakers.map((dev) => (
-                          <option key={dev.index} value={dev.name} className="bg-black text-purple-200">
+                          <option key={dev.index} value={dev.name}>
                             {dev.name} ({dev.channels_out} out)
                           </option>
                         ))}
@@ -812,82 +725,80 @@ export function SettingsDialog({
               </div>
             )}
 
-            {/* 7. REGISTRO DE APLICACIONES */}
+            {/* REGISTRY TAB */}
             {activeTab === "registry" && (
               <div className="space-y-4 animate-fade-in">
-                <Card title="SYS_REGISTRY // LAUNCH_HOOKS">
-                  <div className="flex gap-3 items-end">
-                    <InputField label="Alias del Comando">
+                <Card title="Registro de aplicaciones">
+                  <div className="flex items-end gap-2">
+                    <InputField label="Alias">
                       <input
                         type="text"
-                        placeholder="por ej., steam, spotify"
+                        placeholder="steam, spotify..."
                         value={newAppAlias}
                         onChange={(e) => setNewAppAlias(e.target.value)}
-                        className="w-full h-9 rounded-lg border border-purple-500/10 bg-purple-950/5 px-3 text-xs text-purple-200 outline-none focus:border-purple-500/35 transition-all font-mono select-text"
+                        className="input"
                       />
                     </InputField>
-
                     <InputField label="Tipo">
                       <select
                         value={newAppType}
                         onChange={(e) => setNewAppType(e.target.value as any)}
-                        className="w-full h-9 rounded-lg border border-purple-500/10 bg-black px-3 text-xs text-purple-200 outline-none focus:border-purple-500/35 cursor-pointer font-mono"
+                        className="input"
                       >
-                        <option value="exe" className="bg-black text-purple-200">Ejecutable (EXE/Path)</option>
-                        <option value="appid" className="bg-black text-purple-200">App ID (Windows Store)</option>
+                        <option value="exe">Ejecutable</option>
+                        <option value="appid">App ID</option>
                       </select>
                     </InputField>
-
                     <button
                       type="button"
                       onClick={handleAddApp}
-                      className="h-9 w-9 shrink-0 flex items-center justify-center border border-purple-500/30 rounded-lg hover:bg-purple-500/10 text-purple-400 hover:text-purple-200 cursor-pointer transition-all duration-300"
+                      className="btn btn-secondary h-[42px] w-[42px] p-0"
                     >
-                      <Plus className="h-4.5 w-4.5" />
+                      <Plus className="h-4 w-4" />
                     </button>
                   </div>
 
-                  <InputField label="Ruta completa o App ID">
+                  <InputField label="Ruta o App ID">
                     <input
                       type="text"
-                      placeholder={newAppType === "exe" ? "C:\\Archivos de Programa\\...\\app.exe" : "spotify"}
+                      placeholder={newAppType === "exe" ? "C:\\...\\app.exe" : "spotify"}
                       value={newAppPath}
                       onChange={(e) => setNewAppPath(e.target.value)}
-                      className="w-full h-9 rounded-lg border border-purple-500/10 bg-purple-950/5 px-3 text-xs text-purple-200 outline-none focus:border-purple-500/35 transition-all font-mono select-text"
+                      className="input"
                     />
                   </InputField>
 
-                  <div className="border border-purple-500/10 rounded-xl bg-black/60 p-4 max-h-[220px] overflow-y-auto mt-4">
-                    <table className="w-full text-xs font-mono text-purple-300/80">
+                  <div className="mt-4 max-h-[200px] overflow-y-auto rounded-lg border border-border bg-surface-elevated">
+                    <table className="w-full text-sm">
                       <thead>
-                        <tr className="border-b border-purple-500/10 pb-2 text-[0.62rem] text-purple-400/40">
-                          <th className="text-left py-1.5 uppercase font-bold">Alias</th>
-                          <th className="text-left py-1.5 uppercase font-bold">Tipo</th>
-                          <th className="text-left py-1.5 uppercase font-bold">Destino</th>
+                        <tr className="border-b border-border text-left text-xs text-text-muted">
+                          <th className="px-3 py-2">Alias</th>
+                          <th className="px-3 py-2">Tipo</th>
+                          <th className="px-3 py-2">Destino</th>
                           <th className="w-10"></th>
                         </tr>
                       </thead>
                       <tbody>
                         {Object.entries(config.app_registry?.apps || {}).map(([alias, val]) => (
-                          <tr key={alias} className="border-b border-purple-500/5 hover:bg-purple-500/5 transition-all">
-                            <td className="py-2 text-purple-200 font-semibold">{alias}</td>
-                            <td className="py-2 uppercase text-[0.58rem]">{val.type}</td>
-                            <td className="py-2 truncate max-w-xs" title={val.path || val.id}>{val.path || val.id}</td>
-                            <td className="py-2 text-right">
+                          <tr key={alias} className="border-b border-border last:border-0">
+                            <td className="px-3 py-2 font-medium text-text-primary">{alias}</td>
+                            <td className="px-3 py-2 text-xs text-text-muted uppercase">{val.type}</td>
+                            <td className="max-w-[200px] truncate px-3 py-2 text-text-secondary">{val.path || val.id}</td>
+                            <td className="px-3 py-2">
                               <button
                                 type="button"
                                 onClick={() => handleRemoveApp(alias)}
-                                className="text-red-500/50 hover:text-red-400 transition-colors p-1 cursor-pointer"
+                                className="cursor-pointer p-1 text-text-muted transition-colors hover:text-danger"
                               >
-                                <Trash2 className="h-3.5 w-3.5" />
+                                <Trash2 className="h-4 w-4" />
                               </button>
                             </td>
                           </tr>
                         ))}
                         {Object.keys(config.app_registry?.apps || {}).length === 0 && (
                           <tr>
-                            <td colSpan={4} className="text-center py-4 text-purple-500/30 text-[0.68rem] uppercase font-mono">
-                              No hay aplicaciones registradas.
+                            <td colSpan={4} className="py-6 text-center text-sm text-text-muted">
+                              Sin aplicaciones registradas
                             </td>
                           </tr>
                         )}
@@ -898,27 +809,27 @@ export function SettingsDialog({
               </div>
             )}
 
-            {/* 8. PERFIL */}
+            {/* PROFILE TAB */}
             {activeTab === "profile" && (
               <div className="space-y-4 animate-fade-in">
-                <Card title="OPERATOR METADATA">
-                  <div className="grid grid-cols-2 gap-4">
-                    <InputField label="Nombre del Operador">
+                <Card title="Datos del operador">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <InputField label="Nombre">
                       <input
                         type="text"
                         value={config.user_profile?.name || "Usuario"}
                         onChange={(e) => handleUserProfileChange("name", e.target.value)}
-                        className="w-full h-9 rounded-lg border border-purple-500/10 bg-purple-950/5 px-3 text-xs text-purple-200 outline-none focus:border-purple-500/35 transition-all font-mono select-text"
+                        className="input"
                       />
                     </InputField>
-                    <InputField label="Idioma Preferido">
+                    <InputField label="Idioma">
                       <select
                         value={config.user_profile?.language || "es"}
                         onChange={(e) => handleUserProfileChange("language", e.target.value)}
-                        className="w-full h-9 rounded-lg border border-purple-500/10 bg-black px-3 text-xs text-purple-200 outline-none focus:border-purple-500/35 cursor-pointer font-mono"
+                        className="input"
                       >
-                        <option value="es" className="bg-black text-purple-200">Español (ES)</option>
-                        <option value="en" className="bg-black text-purple-200">English (EN)</option>
+                        <option value="es">Español</option>
+                        <option value="en">English</option>
                       </select>
                     </InputField>
                   </div>
@@ -926,67 +837,58 @@ export function SettingsDialog({
               </div>
             )}
 
-            {/* 9. CONSOLA DE PROCESO */}
+            {/* SYSTEM TAB */}
             {activeTab === "system" && (
-              <div className="space-y-5 animate-fade-in">
-                <Card title="KERNEL DE MIN DEPURACIÓN">
-                  <div className="grid grid-cols-2 gap-4 text-xs font-mono text-purple-300/80">
-                    <div className="p-3 rounded-lg border border-purple-500/5 bg-purple-950/5">
-                      <div className="text-[0.62rem] text-purple-400/40 uppercase mb-1.5 font-bold">Estado Uptime</div>
+              <div className="space-y-4 animate-fade-in">
+                <Card title="Estado del sistema">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="rounded-lg bg-surface-elevated p-3">
+                      <div className="text-xs text-text-muted">Uptime</div>
                       {agentStatus ? (
-                        <div className="text-sm font-semibold text-purple-200">
-                          {Math.floor(agentStatus.uptime_seconds / 60)}m {agentStatus.uptime_seconds % 60}s Activo
+                        <div className="mt-1 text-lg font-semibold text-text-primary">
+                          {Math.floor(agentStatus.uptime_seconds / 60)}m {agentStatus.uptime_seconds % 60}s
                         </div>
                       ) : (
-                        <div className="text-sm text-red-500/80 uppercase font-semibold">Fuera de Línea</div>
+                        <div className="mt-1 text-lg font-semibold text-danger">Offline</div>
                       )}
                     </div>
-
-                    <div className="p-3 rounded-lg border border-purple-500/5 bg-purple-950/5">
-                      <div className="text-[0.62rem] text-purple-400/40 uppercase mb-1.5 font-bold">Python Kernel</div>
-                      <div className="text-sm text-purple-200">
-                        {agentStatus ? agentStatus.python_version.split(" ")[0] : "Desconocido"}
+                    <div className="rounded-lg bg-surface-elevated p-3">
+                      <div className="text-xs text-text-muted">Python</div>
+                      <div className="mt-1 text-lg font-semibold text-text-primary">
+                        {agentStatus ? agentStatus.python_version.split(" ")[0] : "---"}
                       </div>
                     </div>
                   </div>
                 </Card>
 
-                <Card title="LIFECYCLE MANAGEMENT">
-                  <p className="text-[0.62rem] text-purple-400/40 leading-relaxed font-sans -mt-1.5 mb-2">
-                    Comandos del sistema operativo para administrar el proceso de ejecución de MIN.
-                  </p>
-                  <div className="grid grid-cols-3 gap-4">
-                    {/* Boot Button */}
+                <Card title="Control del proceso">
+                  <div className="grid gap-3 sm:grid-cols-3">
                     <button
                       type="button"
                       disabled={starting || !!agentStatus}
                       onClick={handleStartAgent}
-                      className="h-10 rounded border border-purple-500/35 bg-purple-500/5 hover:bg-purple-500 hover:text-black font-mono text-[0.68rem] tracking-widest text-purple-400 hover:shadow-[0_0_12px_rgba(168,85,247,0.4)] disabled:opacity-30 disabled:pointer-events-none cursor-pointer flex items-center justify-center gap-1.5 transition-all duration-300"
+                      className="btn btn-primary disabled:opacity-50"
                     >
                       <Play className="h-4 w-4" />
-                      ARRANCAR CORE
+                      Arrancar
                     </button>
-
-                    {/* Restart Button */}
                     <button
                       type="button"
                       disabled={!agentStatus}
                       onClick={onRestartAgent}
-                      className="h-10 rounded border border-amber-500/35 bg-amber-500/5 hover:bg-amber-500 hover:text-black font-mono text-[0.68rem] tracking-widest text-amber-400 hover:shadow-[0_0_12px_rgba(245,158,11,0.4)] disabled:opacity-30 disabled:pointer-events-none cursor-pointer flex items-center justify-center gap-1.5 transition-all duration-300"
+                      className="btn btn-secondary disabled:opacity-50"
                     >
                       <RefreshCw className="h-4 w-4" />
-                      REINICIAR CORE
+                      Reiniciar
                     </button>
-
-                    {/* Kill Button */}
                     <button
                       type="button"
                       disabled={!agentStatus}
                       onClick={onKillAgent}
-                      className="h-10 rounded border border-red-500/35 bg-red-500/5 hover:bg-red-500 hover:text-black font-mono text-[0.68rem] tracking-widest text-red-400 hover:shadow-[0_0_12px_rgba(239,68,68,0.4)] disabled:opacity-30 disabled:pointer-events-none cursor-pointer flex items-center justify-center gap-1.5 transition-all duration-300"
+                      className="flex h-[42px] cursor-pointer items-center justify-center gap-2 rounded-md border border-danger/30 bg-danger/10 px-4 text-sm font-medium text-danger transition-colors hover:bg-danger/20 disabled:opacity-50"
                     >
-                      <Skull className="h-4 w-4" />
-                      MATAR PROCESO
+                      <Power className="h-4 w-4" />
+                      Detener
                     </button>
                   </div>
                 </Card>
@@ -994,26 +896,24 @@ export function SettingsDialog({
             )}
           </div>
 
-          {/* Footer controls */}
-          <footer className="px-8 py-4 border-t border-purple-500/10 flex justify-between items-center bg-purple-950/5 shrink-0 select-none">
-            <span className="text-[0.58rem] font-mono text-purple-400/40 uppercase tracking-widest">
-              [SYSTEM_CONFIG_MASTER_OK]
-            </span>
-            <div className="flex gap-3">
+          {/* Footer */}
+          <footer className="flex items-center justify-between border-t border-border bg-surface-elevated px-6 py-4">
+            <span className="text-xs text-text-muted">MIN Assistant</span>
+            <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => onOpenChange(false)}
-                className="h-9 px-4 rounded border border-purple-500/10 bg-black/40 text-xs text-purple-400 hover:bg-purple-500/5 cursor-pointer font-mono tracking-wider transition-all"
+                className="btn btn-secondary"
               >
-                CERRAR
+                Cancelar
               </button>
               <button
                 type="button"
                 onClick={onSave}
-                className="h-9 px-5 rounded bg-purple-500 text-black font-semibold text-xs hover:shadow-[0_0_15px_rgba(168,85,247,0.6)] hover:bg-purple-400 cursor-pointer font-mono tracking-wider flex items-center gap-2 transition-all"
+                className="btn btn-primary"
               >
                 <Save className="h-4 w-4" />
-                GUARDAR
+                Guardar
               </button>
             </div>
           </footer>

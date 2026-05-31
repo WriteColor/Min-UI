@@ -11,23 +11,24 @@ interface WeatherWidgetProps {
 export function WeatherWidget({ data, onClose }: WeatherWidgetProps) {
   if (!data) {
     return (
-      <div className="hud-panel p-5 w-76 max-md:w-[calc(100vw-2rem)] relative select-none animate-slide-up">
-        <button
-          onClick={onClose}
-          className="absolute top-3.5 right-3.5 h-6 w-6 flex items-center justify-center rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-all duration-300 cursor-pointer"
-        >
-          <X className="h-3.5 w-3.5" />
-        </button>
-
-        <div className="flex items-center gap-2 mb-3">
-          <CloudSun className="h-4 w-4 text-teal-600 animate-pulse" />
-          <span className="text-[0.62rem] text-slate-600 font-mono font-bold uppercase tracking-widest">
-            SYS_METEO // SYNCHRONIZING
-          </span>
+      <div className="panel w-80 p-5 animate-slide-up max-md:w-[calc(100vw-2rem)]">
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <CloudSun className="h-4 w-4 text-accent" />
+            <span className="text-xs font-medium text-text-secondary">
+              Clima
+            </span>
+          </div>
+          <button
+            onClick={onClose}
+            className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-md text-text-muted transition-colors hover:bg-surface-elevated hover:text-text-primary"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
         </div>
-        <p className="text-xs text-slate-500 font-mono uppercase tracking-wider animate-pulse">
-          Buscando coordenadas satelitales...
-        </p>
+        <div className="flex items-center justify-center py-8">
+          <p className="text-sm text-text-muted">Cargando datos...</p>
+        </div>
       </div>
     );
   }
@@ -36,84 +37,89 @@ export function WeatherWidget({ data, onClose }: WeatherWidgetProps) {
   const tempRatio = Math.max(0, Math.min(100, ((tempVal + 10) / 50) * 100));
 
   return (
-    <div className="hud-panel p-5 w-80 max-md:w-[calc(100vw-2rem)] relative select-none animate-slide-up space-y-4">
-      <button
-        onClick={onClose}
-        className="absolute top-3.5 right-3.5 h-6 w-6 flex items-center justify-center rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-all duration-300 cursor-pointer"
-      >
-        <X className="h-3.5 w-3.5" />
-      </button>
-
-      <div className="flex items-center gap-2">
-        <CloudSun className="h-4 w-4 text-teal-600 animate-pulse" />
-        <span className="text-[0.62rem] text-slate-600 font-mono font-bold uppercase tracking-widest">
-          SYS_METEO // {data.place.toUpperCase()}
-        </span>
+    <div className="panel w-80 space-y-4 p-5 animate-slide-up max-md:w-[calc(100vw-2rem)]">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <CloudSun className="h-4 w-4 text-accent" />
+          <span className="text-xs font-medium text-text-secondary">
+            {data.place}
+          </span>
+        </div>
+        <button
+          onClick={onClose}
+          className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-md text-text-muted transition-colors hover:bg-surface-elevated hover:text-text-primary"
+        >
+          <X className="h-3.5 w-3.5" />
+        </button>
       </div>
 
-      <div className="flex items-center justify-between gap-4">
+      {/* Main temperature */}
+      <div className="flex items-center justify-between">
         <div>
-          <div className="text-4xl font-extralight text-slate-900 font-mono leading-none tracking-tight">
-            {data.temp !== null ? `${Math.round(data.temp)}°C` : "--"}
+          <div className="font-mono text-4xl font-light text-text-primary">
+            {data.temp !== null ? `${Math.round(data.temp)}°` : "--"}
           </div>
-          <div className="text-[0.65rem] text-slate-500 uppercase font-mono mt-2 tracking-wide">
-            {data.desc.toUpperCase()}
+          <div className="mt-1 text-sm capitalize text-text-muted">
+            {data.desc}
           </div>
         </div>
-        <span className="text-4xl filter drop-shadow-[0_0_8px_rgba(13,148,136,0.35)]">
-          {data.emoji || "☀️"}
-        </span>
+        <span className="text-5xl">{data.emoji || "☀️"}</span>
       </div>
 
-      <div className="space-y-1">
-        <div className="flex justify-between text-[0.55rem] text-slate-500 font-mono">
-          <span>THERMO_LEVEL</span>
-          <span>{data.feel !== null ? `SENSACIÓN: ${Math.round(data.feel)}°` : ""}</span>
+      {/* Temperature bar */}
+      <div className="space-y-1.5">
+        <div className="flex justify-between text-xs text-text-muted">
+          <span>Temperatura</span>
+          <span>
+            {data.feel !== null ? `Sensación: ${Math.round(data.feel)}°` : ""}
+          </span>
         </div>
-        <div className="w-full h-1.5 rounded-full bg-slate-200/70 overflow-hidden border border-slate-200">
-          <div 
-            className="h-full bg-gradient-to-r from-teal-500 to-sky-400 transition-all duration-1000"
+        <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-elevated">
+          <div
+            className="h-full rounded-full bg-accent transition-all duration-1000"
             style={{ width: `${tempRatio}%` }}
           />
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 pt-2 border-t border-slate-200/80">
-        <div className="flex items-center gap-2.5">
-          <Wind className="h-4 w-4 text-slate-500" />
-          <div className="font-mono text-left">
-            <div className="text-[0.55rem] text-slate-500 uppercase">VIENTO</div>
-            <div className="text-[0.68rem] text-slate-800 font-semibold">{data.wind !== null ? `${data.wind} km/h` : "--"}</div>
+      {/* Wind and humidity */}
+      <div className="grid grid-cols-2 gap-3 border-t border-border pt-4">
+        <div className="flex items-center gap-2">
+          <Wind className="h-4 w-4 text-text-muted" />
+          <div>
+            <div className="text-xs text-text-muted">Viento</div>
+            <div className="text-sm font-medium text-text-primary">
+              {data.wind !== null ? `${data.wind} km/h` : "--"}
+            </div>
           </div>
         </div>
-
-        <div className="flex items-center gap-2.5">
-          <Droplets className="h-4 w-4 text-slate-500" />
-          <div className="font-mono text-left">
-            <div className="text-[0.55rem] text-slate-500 uppercase">HUMEDAD</div>
-            <div className="text-[0.68rem] text-slate-800 font-semibold">{data.humidity !== null ? `${data.humidity}%` : "--"}</div>
+        <div className="flex items-center gap-2">
+          <Droplets className="h-4 w-4 text-text-muted" />
+          <div>
+            <div className="text-xs text-text-muted">Humedad</div>
+            <div className="text-sm font-medium text-text-primary">
+              {data.humidity !== null ? `${data.humidity}%` : "--"}
+            </div>
           </div>
         </div>
       </div>
 
+      {/* Forecast */}
       {data.forecast && data.forecast.length > 0 && (
-        <div className="pt-3 border-t border-slate-200/80 space-y-2">
-          <div className="text-[0.55rem] text-slate-500 uppercase font-mono tracking-wider">
-            FORECAST // PROYECCIÓN
-          </div>
+        <div className="space-y-2 border-t border-border pt-4">
+          <div className="text-xs text-text-muted">Pronóstico</div>
           <div className="grid grid-cols-3 gap-2">
             {data.forecast.slice(0, 3).map((f, idx) => (
-              <div 
-                key={idx} 
-                className="p-2 rounded bg-white/70 border border-slate-200 text-center font-mono space-y-1 hover:border-teal-300 transition-all duration-300"
+              <div
+                key={idx}
+                className="rounded-lg bg-surface-elevated p-2 text-center"
               >
-                <div className="text-[0.55rem] text-slate-500 uppercase truncate">
+                <div className="text-xs text-text-muted">
                   {f.date.split("-")[2] || f.date}
                 </div>
-                <div className="text-[0.8rem] filter drop-shadow-[0_0_4px_rgba(13,148,136,0.2)]">
-                  {f.emoji}
-                </div>
-                <div className="text-[0.62rem] text-slate-800 font-bold">
+                <div className="my-1 text-xl">{f.emoji}</div>
+                <div className="text-sm font-medium text-text-primary">
                   {f.max !== null ? `${Math.round(f.max)}°` : "--"}
                 </div>
               </div>
